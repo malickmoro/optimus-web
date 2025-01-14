@@ -129,7 +129,7 @@ const Form = () => {
       setAmountToPay(0);
       return;
     }
-   
+
     if (!await validateCryptoWallet(crypto, walletAddress)) {
       setFormError(`Invalid ${crypto} wallet`);
       setTimeout(() => { setFormError(""); setLoading(false) }, 1000);
@@ -288,7 +288,6 @@ const Form = () => {
               />
             </div>
 
-            {/* Phone Number Input */}
             <div className="space-y-2">
               <label className="font-medium text-md" htmlFor="email">
                 Phone Number (For Notifications)
@@ -304,20 +303,20 @@ const Form = () => {
               />
             </div>
 
-            <div className="flex justify-between mt-5">
-              <div className="flex flex-col items-center">
-                <label className="font-medium text-md">{crypto} Rate</label>
-                <span>${exchangeRate}</span>
-              </div>
-              <div className="flex flex-col items-center">
-                <label className="font-medium text-md">Fee</label>
-                <span>${fee}</span>
-              </div>
-              <div className="flex flex-col items-center">
-                <label className="font-medium text-md">Total</label>
-                <span>GH₵{amountToPay}</span>
-              </div>
-            </div>
+            <table className="w-full mt-5">
+              <tbody>
+                <tr>
+                  <td className="font-medium text-md text-center">{crypto} Rate</td>
+                  <td className="font-medium text-md text-center">Fee</td>
+                  <td className="font-medium text-md text-center">Total</td>
+                </tr>
+                <tr>
+                  <td className="text-center">${exchangeRate}</td>
+                  <td className="text-center">${fee}</td>
+                  <td className="text-center">GH₵{amountToPay}</td>
+                </tr>
+              </tbody>
+            </table>
 
             {/* Submit Button */}
 
