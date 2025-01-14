@@ -304,7 +304,7 @@ const PayDone = ({ type }) => {
   const checkoutId = searchParams.get("checkoutid");
   useEffect(() => {
     setTimeout(() => {
-      navigate("/c/buy/*", { state: { reload: true } });
+      navigate("/", { state: { reload: true } });
     }, 2000);
   }, []);
 
