@@ -306,7 +306,7 @@ const Form = () => {
 
             <div className="flex justify-between mt-5">
               <div className="flex flex-col items-center">
-                <label className="font-medium text-md">Exchange Rate</label>
+                <label className="font-medium text-md">{crypto} Rate</label>
                 <span>${exchangeRate}</span>
               </div>
               <div className="flex flex-col items-center">
@@ -314,7 +314,7 @@ const Form = () => {
                 <span>${fee}</span>
               </div>
               <div className="flex flex-col items-center">
-                <label className="font-medium text-md">Total Amount to Pay</label>
+                <label className="font-medium text-md">Total</label>
                 <span>GH₵{amountToPay}</span>
               </div>
             </div>
