@@ -9,7 +9,7 @@ const HomePage = () => {
   return (
     <Routes>
       <Route
-        path="/c/buy/*"
+        path="/"
         element={
           <main className="flex min-h-screen flex-col items-center justify-center w-full max-w-7xl text-white">
             <div className="flex md:flex-row flex-col w-full">
