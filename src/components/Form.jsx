@@ -306,18 +306,19 @@ const Form = () => {
             <table className="w-full mt-5">
               <tbody>
                 <tr>
-                  <td className="font-medium text-md text-center">{crypto} Rate</td>
-                  <td className="font-medium text-md text-center">Fee</td>
-                  <td className="font-medium text-md text-center">Total</td>
+                  <td className="font-bold text-md text-left">Exchange Rate</td>
+                  <td className="font-medium text-md text-right">${exchangeRate}</td>
                 </tr>
                 <tr>
-                  <td className="text-center">${exchangeRate}</td>
-                  <td className="text-center">${fee}</td>
-                  <td className="text-center">GH₵{amountToPay}</td>
+                  <td className="font-bold text-md text-left">Service Fee</td>
+                  <td className="font-medium text-md text-right">${fee}</td>
+                </tr>
+                <tr>
+                  <td className="font-bold text-md text-left">Amount To Pay</td>
+                  <td className="font-medium text-md text-right">GH₵{amountToPay}</td>
                 </tr>
               </tbody>
             </table>
-
             {/* Submit Button */}
 
 
