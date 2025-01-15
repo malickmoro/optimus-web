@@ -52,11 +52,11 @@ export const generate_payment_link_hubtel = (domain, apiKey, formError, token, p
         .catch((error) => {
             if (error.status === 400) {
                 formError("Amount not feasible, please reduce or contact admin!");
-                setTimeout(() => {formError("")}, 2000);
+                setTimeout(() => { formError("") }, 2000);
                 onSuccess();
             } else {
                 formError("Unexpected Error");
-                setTimeout(() => {formError("")}, 2000);
+                setTimeout(() => { formError("") }, 2000);
                 onSuccess();
             }
         });
@@ -182,13 +182,19 @@ export const validateUsdtTrc20Address = async (address) => {
 };
 
 export const validateBitcoinAddress = (address) => {
-    try {
-        // BitcoinAddress.toOutputScript(address);
-        return true; // Valid address
-    } catch (error) {
-        console.log(error);
-        return false; // Invalid address
-    }
+    // Legacy addresses (P2PKH) start with 1
+    const legacyRegex = /^1[a-km-zA-HJ-NP-Z1-9]{25,34}$/;
+    
+    // P2SH addresses start with 3
+    const p2shRegex = /^3[a-km-zA-HJ-NP-Z1-9]{25,34}$/;
+    
+    // Bech32 addresses (Native SegWit) start with bc1
+    const bech32Regex = /^bc1[a-z0-9]{39,59}$/;
+    
+    // Test all formats
+    return legacyRegex.test(address) || 
+           p2shRegex.test(address) || 
+           bech32Regex.test(address);
 };
 
 export const validateCryptoWallet = async (cryptoType, walletAddress) => {

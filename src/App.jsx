@@ -1,26 +1,23 @@
 // App.js
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import "./index.css";
 import HomePage from './pages/Home/Home';
-import Payment from './pages/Payment/Payment';
 import { WhatsAppWidget } from 'react-whatsapp-widget';
 import 'react-whatsapp-widget/dist/index.css';
-import CompanyIcon from './assets/img/pee.svg?url';
 
 
 const App = () => {
-  const [width, setWidth] = useState(window.innerWidth);
-  const [height, setHeight] = useState(window.innerHeight);
-
-  const setDimensions = () => {
-    setWidth(window.innerWidth);
-    setHeight(window.innerHeight);
-  };
+  const [setWidth] = useState(window.innerWidth);
 
   useEffect(() => {
-    setDimensions();
-  }, [window.innerWidth]);
+    const handleResize = () => {
+      setWidth(window.innerWidth);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   return (<>
 

@@ -1,5 +1,5 @@
 // src/components/Form.jsx
-import React, { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import logo from '../assets/img/pee.jpg';
 import Footer from './Footer';
 import ContextVariables from '../context/ContextVariables';
@@ -95,7 +95,7 @@ const Form = () => {
 
     const totalUSDAmount = parseFloat(USDAmount) + parseFloat(fee);
     setCryptoAmount((USDAmount / exchangeRate).toFixed(8));
-    setAmountToPay((totalUSDAmount * cediRate));
+    setAmountToPay((totalUSDAmount * cediRate).toFixed(2));
   };
 
 
@@ -178,8 +178,46 @@ const Form = () => {
   }
 
   useEffect(() => {
-    handleCryptoChange();
-  }, [cryptoAmount, USDAmount, walletAddress]);
+    const updateValues = async () => {
+      if (crypto) {  // Only run if crypto is selected
+        try {
+          const response = await axios.get(
+            `${domain}/optimus/v1/api/cryptomus/exchange-rate/${crypto}?to=USD`,
+            {
+              headers: {
+                "Content-Type": "application/json",
+                "X-API-KEY": apiKey,
+              },
+            }
+          );
+          // Rest of your exchange rate logic here
+          const exchangeRate = parseFloat(response?.data?.result[0]?.course).toFixed(2);
+          const withdrawalFee = Math.ceil(parseFloat(response?.data?.result[0]?.withdrawalFee) * 100) / 100;
+
+          let additionalFee = 0;
+          if (USDAmount >= 0 && USDAmount <= 50) {
+            additionalFee = 3;
+          } else if (USDAmount >= 51 && USDAmount <= 100) {
+            additionalFee = 4;
+          } else if (USDAmount > 100) {
+            additionalFee = 0.05 * USDAmount;
+          }
+
+          const totalFeeUSD = withdrawalFee + additionalFee;
+          const min = totalFeeUSD + 2;
+          setMinimunUSDAmount(min);
+          setFee(totalFeeUSD.toFixed(2));
+          setExchangeRate(exchangeRate);
+        } catch (error) {
+          console.log(error);
+          setFormError("Error fetching fee");
+          setTimeout(() => { setFormError("") }, 1000);
+        }
+      }
+    };
+
+    updateValues();
+  }, [crypto, USDAmount, walletAddress, domain, apiKey]);
 
 
   return (
@@ -276,7 +314,7 @@ const Form = () => {
 
             {/*Crypto Wallet Input */}
             <div className="space-y-2">
-              <label className="font-medium text-md" htmlFor="phone_number">
+              <label className="font-medium text-md" htmlFor="wallet">
                 Enter your {crypto} address
               </label>
               <input
@@ -289,13 +327,14 @@ const Form = () => {
             </div>
 
             <div className="space-y-2">
-              <label className="font-medium text-md" htmlFor="email">
+              <label className="font-medium text-md" htmlFor="phone">
                 Phone Number (For Notifications)
               </label>
               <input
                 type="tel"
                 id="phone"
                 inputMode='numeric'
+                autoComplete="tel"
                 value={phoneNumber}
                 onChange={(e) => setPhoneNumber(e.target.value)}
                 className="h-10 w-full px-3 py-2 bg-neutral-700 border border-neutral-600"
