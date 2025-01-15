@@ -146,14 +146,16 @@ const Form = () => {
       error = "Please enter a valid wallet address.";
     } else if (cryptoAmount <= 0) {
       error = "Please enter a valid cryptocurrency amount.";
-    } else if (!/^\d{12}$/.test(phoneNumber)) {
+    } else if (!/^\d{10}$/.test(phoneNumber)) {
       error = "Phone number must be 12 digits long.";
-    } else if (!/^233[25]/.test(phoneNumber)) {
-      error = "Phone number must begin with 233 and be followed by 5 or 2.";
-    } else if (!/^\d+$/.test(phoneNumber)) {
-      error = "Phone number must contain only numbers.";
+    } else if (!/^0[25]/.test(phoneNumber)) {
+      error = "Phone number must begin with 0 and be followed by 5 or 2.";
     }
 
+    if (phoneNumber.startsWith('0')) {
+      setPhoneNumber('233' + phoneNumber.slice(1));
+    }
+    
     if (error) {
       setFormError(error);
       setTimeout(() => { setFormError(""); setLoading(false) }, 2000);
@@ -338,7 +340,7 @@ const Form = () => {
                 value={phoneNumber}
                 onChange={(e) => setPhoneNumber(e.target.value)}
                 className="h-10 w-full px-3 py-2 bg-neutral-700 border border-neutral-600"
-                placeholder="e.g. 233555025812"
+                placeholder="e.g. 0244123456"
               />
             </div>
 
