@@ -8,7 +8,7 @@ import 'react-whatsapp-widget/dist/index.css';
 
 
 const App = () => {
-  const [setWidth] = useState(window.innerWidth);
+  const [width, setWidth] = useState(window.innerWidth);
 
   useEffect(() => {
     const handleResize = () => {
@@ -17,7 +17,7 @@ const App = () => {
 
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  }, [setWidth]);
 
   return (<>
 

@@ -27,9 +27,10 @@ code {
 }
 
 .error {
-  color: red;
-  font-size: 0.875rem;
+  color: yellow;
+  font-size: 0.9rem;
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  font-family: 'Poppins', sans-serif;
 }

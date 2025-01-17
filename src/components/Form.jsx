@@ -20,6 +20,9 @@ const Form = () => {
   const [amountToPay, setAmountToPay] = useState(0.0);
   const [exchangeRate, setExchangeRate] = useState(0.0);
   const [formError, setFormError] = useState(false);
+  const [amountError, setAmountError] = useState(false);
+  const [walletError, setWalletError] = useState(false);
+  const [phoneError, setPhoneError] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const paymentData = {
@@ -79,7 +82,6 @@ const Form = () => {
       setExchangeRate(exchangeRate);
 
     } catch (error) {
-      console.log(error);
       setFormError("Error fetching fee");
       setTimeout(() => { setFormError("") }, 1000);
     }
@@ -87,12 +89,11 @@ const Form = () => {
 
   // Function to handle quantity change
   const handleUSDAmountChange = async () => {
-    if (USDAmount < 1) {
+    if (USDAmount < 1 || exchangeRate <= 0) {
       setAmountToPay(0);
       setCryptoAmount(0);
       return;
     }
-
     const totalUSDAmount = parseFloat(USDAmount) + parseFloat(fee);
     setCryptoAmount((USDAmount / exchangeRate).toFixed(8));
     setAmountToPay((totalUSDAmount * cediRate).toFixed(2));
@@ -101,18 +102,16 @@ const Form = () => {
 
 
   const handleCryptoAmountChange = async () => {
-    if (!(cryptoAmount > 0)) {
+    if (!(cryptoAmount > 0) || exchangeRate <= 0) {
       setAmountToPay(0);
       setUSDAmount(0);
       return;
     }
-
-    const usdAmount = exchangeRate / cryptoAmount;
+    const usdAmount = cryptoAmount * exchangeRate;
     const totalPay = usdAmount + fee;
 
     setAmountToPay(totalPay * cediRate);
-    setUSDAmount(usdAmount);
-
+    setUSDAmount(usdAmount.toFixed(2));
   };
 
 
@@ -120,50 +119,46 @@ const Form = () => {
   const handleSubmit = async () => {
     setLoading(true);
 
-
-    if (USDAmount < minimumUSDAmount) {
-      setFormError(`Minimum usd amount to buy is ${minimumUSDAmount.toFixed(2)}`);
-      setTimeout(() => { setFormError(""); setLoading(false) }, 1000);
-      setUSDAmount(minimumUSDAmount.toFixed(2));
-      setCryptoAmount(0);
-      setAmountToPay(0);
-      return;
-    }
-
-    if (!await validateCryptoWallet(crypto, walletAddress)) {
-      setFormError(`Invalid ${crypto} wallet`);
-      setTimeout(() => { setFormError(""); setLoading(false) }, 1000);
-      return;
-    }
-
-    let error = "";
-
     if (!crypto) {
-      error = "Please select a cryptocurrency to buy.";
-    } else if (USDAmount <= 0) {
-      error = `Minimum usd amount to buy is ${minimumUSDAmount.toFixed(2)}`;
+      setFormError("Please select a cryptocurrency to buy.");
+      setTimeout(() => { setFormError(""); setLoading(false) }, 2000);
+      return;
+    } else if (USDAmount <= 0 || USDAmount < minimumUSDAmount) {
+      setAmountError(`Minimum usd amount to buy is $5`);
+      setTimeout(() => { setAmountError(""); setLoading(false) }, 2000);
+      return;
+    } else if (!cryptoAmount) {
+      setAmountError("Crypto amount must be greater than 0.");
+      setTimeout(() => { setAmountError(""); setLoading(false) }, 2000);
+      return;
     } else if (walletAddress?.length === 0) {
-      error = "Please enter a valid wallet address.";
+      setWalletError("Please enter a valid wallet address.");
+      setTimeout(() => { setWalletError(""); setLoading(false) }, 2000);
+      return;
+    } else if (!await validateCryptoWallet(crypto, walletAddress)) {
+      setWalletError(`Invalid ${crypto} wallet`);
+      setTimeout(() => { setWalletError(""); setLoading(false) }, 1000);
+      return;
     } else if (cryptoAmount <= 0) {
-      error = "Please enter a valid cryptocurrency amount.";
+      setAmountError("Please enter a valid cryptocurrency amount.");
+      setTimeout(() => { setAmountError(""); setLoading(false) }, 2000);
+      return;
     } else if (!/^\d{10}$/.test(phoneNumber)) {
-      error = "Phone number must be 12 digits long.";
+      setPhoneError("Phone number must be 10 digits long.");
+      setTimeout(() => { setPhoneError(""); setLoading(false) }, 2000);
+      return;
     } else if (!/^0[25]/.test(phoneNumber)) {
-      error = "Phone number must begin with 0 and be followed by 5 or 2.";
+      setPhoneError("Phone number must begin with 0 and be followed by 5 or 2.");
+      setTimeout(() => { setPhoneError(""); setLoading(false) }, 2000);
+      return;
     }
 
     if (phoneNumber.startsWith('0')) {
       setPhoneNumber('233' + phoneNumber.slice(1));
     }
-    
-    if (error) {
-      setFormError(error);
-      setTimeout(() => { setFormError(""); setLoading(false) }, 2000);
-      return;
-    } else {
-      generate_payment_link_hubtel(domain, apiKey, setFormError, null, paymentData, orderData, () => setLoading(false));
-      // begin_payment(domain, apiKey, setFormError, authInfo?.token, paymentData, orderData, () => setLoading(false));
-    }
+
+    generate_payment_link_hubtel(domain, apiKey, setFormError, null, paymentData, orderData, () => setLoading(false));
+
     reset();
     setCrypto('');
   };
@@ -244,7 +239,7 @@ const Form = () => {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 className="error"
-                style={{ fontSize: "12px", color: "red", marginTop: "3px" }}
+                style={{ fontSize: "12px", color: "yellow", marginTop: "3px" }}
               >
                 <i className="bx bxs-error bx-tada"></i>
                 {formError}
@@ -272,7 +267,21 @@ const Form = () => {
               </select>
             </div>
 
-
+            <AnimatePresence>
+              {amountError && (
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="error"
+                  style={{ fontSize: "12px", color: "yellow", marginTop: "3px" }}
+                >
+                  <i className="bx bxs-error bx-tada"></i>
+                  {amountError}
+                  <i className="bx bxs-error bx-tada"></i>
+                </motion.p>
+              )}
+            </AnimatePresence>
             <div className="space-y-2">
               <label className="font-medium text-md" htmlFor="amount_usd">
                 Amount (USD) - Cedi Rate({cediRate})
@@ -314,6 +323,21 @@ const Form = () => {
             </div>
 
 
+            <AnimatePresence>
+              {walletError && (
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="error"
+                  style={{ fontSize: "12px", color: "yellow", marginTop: "3px" }}
+                >
+                  <i className="bx bxs-error bx-tada"></i>
+                  {walletError}
+                  <i className="bx bxs-error bx-tada"></i>
+                </motion.p>
+              )}
+            </AnimatePresence>
             {/*Crypto Wallet Input */}
             <div className="space-y-2">
               <label className="font-medium text-md" htmlFor="wallet">
@@ -328,6 +352,21 @@ const Form = () => {
               />
             </div>
 
+            <AnimatePresence>
+              {phoneError && (
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="error"
+                  style={{ fontSize: "12px", color: "yellow", marginTop: "3px" }}
+                >
+                  <i className="bx bxs-error bx-tada"></i>
+                  {phoneError}
+                  <i className="bx bxs-error bx-tada"></i>
+                </motion.p>
+              )}
+            </AnimatePresence>
             <div className="space-y-2">
               <label className="font-medium text-md" htmlFor="phone">
                 Phone Number (For Notifications)

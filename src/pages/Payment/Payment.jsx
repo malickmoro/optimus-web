@@ -135,7 +135,7 @@ export const StyledPay = styled(motion.section)`
         > .error {
           font-size: ${fixedHeight(1.7)}px;
           align-self: center;
-          color: red;
+          color: yellow;
         }
       
         > input,
