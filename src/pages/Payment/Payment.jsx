@@ -1,5 +1,4 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { useSearchParams } from "react-router-dom";
 import axios from "axios";
 import ContextVariables from "../../context/ContextVariables";
 import AuthContext from "../../context/AuthContext";
@@ -7,6 +6,7 @@ import styled from "styled-components";
 import { fetchPlutusAuthKey, fixedHeight, fixedWidth, removePlutusAuthKey, updatePlutusAuth } from "../../Functions";
 import { Route, Routes, useNavigate } from "react-router-dom";
 import React, { useContext, useEffect, useState } from "react";
+import PropTypes from 'prop-types';
 
 
 export const StyledPay = styled(motion.section)`
@@ -300,13 +300,12 @@ export default Payment;
 
 const PayDone = ({ type }) => {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const checkoutId = searchParams.get("checkoutid");
+  
   useEffect(() => {
     setTimeout(() => {
       navigate("/", { state: { reload: true } });
     }, 2000);
-  }, []);
+  }, [navigate]);
 
   return (
     <div className="payDone center">
@@ -345,6 +344,9 @@ const PayDone = ({ type }) => {
   );
 };
 
+PayDone.propTypes = {
+  type: PropTypes.oneOf(['success', 'failed']).isRequired
+};
 
 function PaymentProcess() {
   const clientReference = fetchPlutusAuthKey("clientReference");
@@ -461,7 +463,7 @@ function PaymentProcess() {
 
     axios
       .post(url, data, { headers })
-      .then((response) => {
+      .then(() => {
         setLoading(false);
         setCurrentStep(3); // Move to next step only on success
         updatePlutusAuth("step", 3);
@@ -504,7 +506,7 @@ function PaymentProcess() {
           setLoading(false);
         }
       })
-      .catch((error) => {
+      .catch(() => {
         setError("Error checking payment");
         setLoading(false);
       });
@@ -542,7 +544,7 @@ function PaymentProcess() {
 
     axios
       .post(url, null, { headers })
-      .then((response) => {
+      .then(() => {
         reset();
         navigate('/payment/failed');
       })

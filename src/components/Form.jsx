@@ -82,6 +82,7 @@ const Form = () => {
       setExchangeRate(exchangeRate);
 
     } catch (error) {
+      console.log(error.message);
       setFormError("Error fetching fee");
       setTimeout(() => { setFormError("") }, 1000);
     }
