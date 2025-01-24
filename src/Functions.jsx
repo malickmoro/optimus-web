@@ -62,6 +62,57 @@ export const generate_payment_link_hubtel = (domain, apiKey, formError, token, p
         });
 }
 
+export const generate_payment_link_redde = (domain, apiKey, formError, token, paymentData, orderData, onSuccess) => {
+    const url = domain + "/optimus/v1/api/payment/redde/checkout";
+    const adjustedAmountGHS = parseFloat(paymentData.amountGHS) + (parseFloat(paymentData.amountGHS) * 0.02);
+    const headers = {
+        "X-API-KEY": apiKey,
+        "Content-Type": "application/json",
+    };
+
+    const data = {
+        "clientReference": paymentData.clientReference,
+        "currency": "GHS",
+        "amountGHS": adjustedAmountGHS,
+        "cryptoAmount": parseFloat(orderData.cryptoAmount),
+        "fee": orderData.fee,
+        "email": "test@theplutushome.com",
+        "crypto": orderData.crypto,
+        "phone": orderData.phoneNumber,
+        "rate": orderData.rate,
+        "address": orderData.address,
+        "transactionId": orderData.transactionId
+    };
+
+    console.log(JSON.stringify(data, null, 2));
+
+    axios
+        .post(url, data, { headers })
+        .then((response) => {
+            const result = response.data;
+            if (result.status && result.data && result.data.checkouturl) {
+                let paymentUrl = result.data.checkouturl;
+                onSuccess();
+                window.location.href = paymentUrl;
+            } else {
+                formError("Error generating payment link");
+                onSuccess();
+            }
+        })
+        .catch((error) => {
+            if (error.status === 400) {
+                formError("Amount not feasible, please reduce or contact admin!");
+                setTimeout(() => { formError("") }, 2000);
+                onSuccess();
+            } else {
+                formError("Unexpected Error");
+                setTimeout(() => { formError("") }, 2000);
+                onSuccess();
+            }
+        });
+    //TODO: Implement Redde Payment Link Generation
+}
+
 export const begin_payment = (domain, apiKey, formError, token, paymentData, orderData, onSuccess) => {
 
     const url = domain + "/optimus/v1/api/payment/initiate";
@@ -184,17 +235,17 @@ export const validateUsdtTrc20Address = async (address) => {
 export const validateBitcoinAddress = (address) => {
     // Legacy addresses (P2PKH) start with 1
     const legacyRegex = /^1[a-km-zA-HJ-NP-Z1-9]{25,34}$/;
-    
+
     // P2SH addresses start with 3
     const p2shRegex = /^3[a-km-zA-HJ-NP-Z1-9]{25,34}$/;
-    
+
     // Bech32 addresses (Native SegWit) start with bc1
     const bech32Regex = /^bc1[a-z0-9]{39,59}$/;
-    
+
     // Test all formats
-    return legacyRegex.test(address) || 
-           p2shRegex.test(address) || 
-           bech32Regex.test(address);
+    return legacyRegex.test(address) ||
+        p2shRegex.test(address) ||
+        bech32Regex.test(address);
 };
 
 export const validateCryptoWallet = async (cryptoType, walletAddress) => {

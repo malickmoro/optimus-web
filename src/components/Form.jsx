@@ -3,7 +3,7 @@ import { useContext, useEffect, useState } from 'react';
 import logo from '../assets/img/pee.jpg';
 import Footer from './Footer';
 import ContextVariables from '../context/ContextVariables';
-import { generate_payment_link_hubtel, validateCryptoWallet } from '../Functions';
+import { generate_payment_link_hubtel, generate_payment_link_redde, validateCryptoWallet } from '../Functions';
 import { AnimatePresence, motion } from 'framer-motion';
 import axios from "axios";
 
@@ -23,7 +23,8 @@ const Form = () => {
   const [amountError, setAmountError] = useState(false);
   const [walletError, setWalletError] = useState(false);
   const [phoneError, setPhoneError] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [hubtelLoading, setHubtelLoading] = useState(false);
+  const [reddeLoading, setReddeLoading] = useState(false);
 
   const paymentData = {
     clientReference: `Payment_${Date.now()}`,
@@ -117,48 +118,55 @@ const Form = () => {
 
 
   // Function to handle form submission
-  const handleSubmit = async () => {
-    setLoading(true);
+  const handleSubmit = async (type) => {
+    if (type === 'hubtel') {
+      setHubtelLoading(true);
+    } else if (type === 'redde') {
+      setReddeLoading(true);
+    }
 
     if (!crypto) {
       setFormError("Please select a cryptocurrency to buy.");
-      setTimeout(() => { setFormError(""); setLoading(false) }, 2000);
+      setTimeout(() => { setFormError(""); setHubtelLoading(false); setReddeLoading(false); }, 2000);
       return;
     } else if (USDAmount <= 0 || USDAmount < minimumUSDAmount) {
       setAmountError(`Minimum usd amount to buy is $5`);
-      setTimeout(() => { setAmountError(""); setLoading(false) }, 2000);
+      setTimeout(() => { setAmountError(""); setHubtelLoading(false); setReddeLoading(false); }, 2000);
       return;
     } else if (!cryptoAmount) {
       setAmountError("Crypto amount must be greater than 0.");
-      setTimeout(() => { setAmountError(""); setLoading(false) }, 2000);
+      setTimeout(() => { setAmountError(""); setHubtelLoading(false); setReddeLoading(false); }, 2000);
       return;
     } else if (walletAddress?.length === 0) {
       setWalletError("Please enter a valid wallet address.");
-      setTimeout(() => { setWalletError(""); setLoading(false) }, 2000);
+      setTimeout(() => { setWalletError(""); setHubtelLoading(false); setReddeLoading(false); }, 2000);
       return;
     } else if (!await validateCryptoWallet(crypto, walletAddress)) {
       setWalletError(`Invalid ${crypto} wallet`);
-      setTimeout(() => { setWalletError(""); setLoading(false) }, 1000);
+      setTimeout(() => { setWalletError(""); setHubtelLoading(false); setReddeLoading(false); }, 1000);
       return;
     } else if (cryptoAmount <= 0) {
       setAmountError("Please enter a valid cryptocurrency amount.");
-      setTimeout(() => { setAmountError(""); setLoading(false) }, 2000);
+      setTimeout(() => { setAmountError(""); setHubtelLoading(false); setReddeLoading(false); }, 2000);
       return;
     } else if (!/^\d{10}$/.test(phoneNumber)) {
       setPhoneError("Phone number must be 10 digits long.");
-      setTimeout(() => { setPhoneError(""); setLoading(false) }, 2000);
+      setTimeout(() => { setPhoneError(""); setHubtelLoading(false); setReddeLoading(false); }, 2000);
       return;
     } else if (!/^0[25]/.test(phoneNumber)) {
       setPhoneError("Phone number must begin with 0 and be followed by 5 or 2.");
-      setTimeout(() => { setPhoneError(""); setLoading(false) }, 2000);
+      setTimeout(() => { setPhoneError(""); setHubtelLoading(false); setReddeLoading(false); }, 2000);
       return;
     }
 
     if (phoneNumber.startsWith('0')) {
       setPhoneNumber('233' + phoneNumber.slice(1));
     }
-
-    generate_payment_link_hubtel(domain, apiKey, setFormError, null, paymentData, orderData, () => setLoading(false));
+    if (type === 'hubtel') {
+      generate_payment_link_hubtel(domain, apiKey, setFormError, null, paymentData, orderData, () => setHubtelLoading(false));
+    } else if (type === 'redde') {
+      generate_payment_link_redde(domain, apiKey, setFormError, null, paymentData, orderData, () => setReddeLoading(false));
+    }
 
     reset();
     setCrypto('');
@@ -173,6 +181,8 @@ const Form = () => {
     setFee(0.0);
     setExchangeRate(0.0);
     setAmountToPay(0.0);
+    setHubtelLoading(false);
+    setReddeLoading(false);
   }
 
   useEffect(() => {
@@ -403,30 +413,56 @@ const Form = () => {
             {/* Submit Button */}
 
 
+            <div className="flex flex-col">
 
-            {loading ? (
-              <motion.button
-                whileTap={{ scale: 0.95 }}
-                type="button"
-                className="h-10 px-4 py-2 mt-5 w-full bg-gray-500 text-primary-foreground rounded-[4px]"
-                disabled={loading}
-              >
-                <span>
-                  <i className="bx bx-loader bx-spin"></i> Processing...
-                </span>
-              </motion.button>
-            ) : (
-              <motion.button
-                whileTap={{ scale: 0.95 }}
-                className="h-10 px-4 py-2 mt-5 w-full bg-purple-900 text-primary-foreground rounded-[4px]"
-                type="button"
-                onClick={handleSubmit}
-              >
-                <span>
-                  Purchase
-                </span>
-              </motion.button>
-            )}
+              {hubtelLoading ? (
+                <motion.button
+                  whileTap={{ scale: 0.95 }}
+                  type="button"
+                  className="h-10 px-4 py-2 mt-5 w-full bg-gray-500 text-primary-foreground rounded-[4px]"
+                  disabled={hubtelLoading}
+                >
+                  <span>
+                    <i className="bx bx-loader bx-spin"></i> Processing...
+                  </span>
+                </motion.button>
+              ) : (
+                <motion.button
+                  whileTap={{ scale: 0.95 }}
+                  className="h-10 px-4 py-2 mt-5 w-full bg-white text-black rounded-[4px]"
+                  type="button"
+                  onClick={() => handleSubmit('hubtel')}
+                >
+                  <span>
+                    Pay with Hubtel
+                  </span>
+                </motion.button>
+              )}
+
+              {reddeLoading ? (
+                <motion.button
+                  whileTap={{ scale: 0.95 }}
+                  type="button"
+                  className="h-10 px-4 py-2 mt-5 w-full bg-gray-500 text-primary-foreground rounded-[4px]"
+                  disabled={reddeLoading}
+                >
+                  <span>
+                    <i className="bx bx-loader bx-spin"></i> Processing...
+                  </span>
+                </motion.button>
+              ) : (
+                <motion.button
+                  whileTap={{ scale: 0.95 }}
+                  className="h-10 px-4 py-2 mt-5 w-full bg-red-900 text-primary-foreground rounded-[4px]"
+                  type="button"
+                  onClick={() => handleSubmit('redde')}
+                >
+                  <span>
+                    Pay with Redde
+                  </span>
+                </motion.button>
+              )}
+            </div>
           </form>
         </div>
       </div>

@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import axios from "axios";
 import ContextVariables from "../../context/ContextVariables";
-import AuthContext from "../../context/AuthContext";
+// import AuthContext from "../../context/AuthContext";
 import styled from "styled-components";
 import { fetchPlutusAuthKey, fixedHeight, fixedWidth, removePlutusAuthKey, updatePlutusAuth } from "../../Functions";
 import { Route, Routes, useNavigate } from "react-router-dom";
@@ -352,10 +352,10 @@ function PaymentProcess() {
   const clientReference = fetchPlutusAuthKey("clientReference");
   const token = fetchPlutusAuthKey("token");
   const amount = fetchPlutusAuthKey("amount");
-  const step = fetchPlutusAuthKey("step");
+  // const step = fetchPlutusAuthKey("step");
   const prefix = fetchPlutusAuthKey("prefix");
   const { domain, apiKey } = useContext(ContextVariables);
-  const { authInfo } = useContext(AuthContext);
+  // const { authInfo } = useContext(AuthContext);
   const [currentStep, setCurrentStep] = useState(1);
   const [phoneNumber, setPhoneNumber] = useState('');
   const [initial, setInitial] = useState("XXXX");
@@ -368,18 +368,18 @@ function PaymentProcess() {
   const [input4, setInput4] = useState('');
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (!authInfo?.token) {
-      navigate("/auth/login");
-    } else {
-      if (step) {
-        setCurrentStep(step);
-      }
-      if (prefix) {
-        setInitial(prefix);
-      }
-    }
-  }, [navigate]);
+  // useEffect(() => {
+  //   if (!authInfo?.token) {
+  //     navigate("/auth/login");
+  //   } else {
+  //     if (step) {
+  //       setCurrentStep(step);
+  //     }
+  //     if (prefix) {
+  //       setInitial(prefix);
+  //     }
+  //   }
+  // }, []);
 
 
   const handlePhoneNumberSubmit = () => {
