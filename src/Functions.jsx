@@ -90,8 +90,8 @@ export const generate_payment_link_redde = (domain, apiKey, formError, token, pa
         .post(url, data, { headers })
         .then((response) => {
             const result = response.data;
-            if (result.status && result.data && result.data.checkouturl) {
-                let paymentUrl = result.data.checkouturl;
+            if (result && result.checkouturl) {
+                let paymentUrl = result.checkouturl;
                 onSuccess();
                 window.location.href = paymentUrl;
             } else {
