@@ -6,6 +6,9 @@ import ContextVariables from '../context/ContextVariables';
 import { generate_payment_link_hubtel, generate_payment_link_redde, validateCryptoWallet } from '../Functions';
 import { AnimatePresence, motion } from 'framer-motion';
 import axios from "axios";
+import hubtelLogo from '../assets/img/hubtellogo.svg';
+import reddeLogo from '../assets/img/reddes-logo.png';
+
 
 const Form = () => {
   // State variables to hold form data
@@ -412,14 +415,17 @@ const Form = () => {
             </table>
             {/* Submit Button */}
 
+            <div className="block w-full text-center">
+              <span>Pay with</span>
+            </div>
 
-            <div className="flex flex-col">
+            <div className="flex flex-row gap-3">
 
               {hubtelLoading ? (
                 <motion.button
                   whileTap={{ scale: 0.95 }}
                   type="button"
-                  className="h-10 px-4 py-2 mt-5 w-full bg-gray-500 text-primary-foreground rounded-[4px]"
+                  className="h-30 px-4 py-2 w-full bg-gray-500 text-primary-foreground rounded-[4px] flex justify-center items-center"
                   disabled={hubtelLoading}
                 >
                   <span>
@@ -429,12 +435,12 @@ const Form = () => {
               ) : (
                 <motion.button
                   whileTap={{ scale: 0.95 }}
-                  className="h-10 px-4 py-2 mt-5 w-full bg-white text-black rounded-[4px]"
+                  className="h-30 px-4 py-2 w-full bg-white text-black rounded-[4px] flex justify-center items-center"
                   type="button"
                   onClick={() => handleSubmit('hubtel')}
                 >
                   <span>
-                    Pay with Hubtel
+                    <img src={hubtelLogo} alt="Hubtel Logo" className="h-10 w-auto" />
                   </span>
                 </motion.button>
               )}
@@ -443,7 +449,7 @@ const Form = () => {
                 <motion.button
                   whileTap={{ scale: 0.95 }}
                   type="button"
-                  className="h-10 px-4 py-2 mt-5 w-full bg-gray-500 text-primary-foreground rounded-[4px]"
+                  className="h-30 px-4 py-2 w-full bg-gray-500 text-primary-foreground rounded-[4px] flex justify-center items-center"
                   disabled={reddeLoading}
                 >
                   <span>
@@ -453,12 +459,12 @@ const Form = () => {
               ) : (
                 <motion.button
                   whileTap={{ scale: 0.95 }}
-                  className="h-10 px-4 py-2 mt-5 w-full bg-red-900 text-primary-foreground rounded-[4px]"
+                  className="h-30 px-4 py-2 w-full bg-white text-primary-foreground rounded-[4px] flex justify-center items-center"
                   type="button"
                   onClick={() => handleSubmit('redde')}
                 >
                   <span>
-                    Pay with Redde
+                    <img src={reddeLogo} alt="Redde Logo" className="h-10 w-auto" />
                   </span>
                 </motion.button>
               )}
