@@ -1,6 +1,7 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App.jsx";
+import { Analytics } from "@vercel/analytics/react"
 import { ContextVariablesProvider } from "./context/ContextVariables.jsx";
 import { AuthContextProvider } from "./context/AuthContext.jsx";
 
@@ -10,6 +11,7 @@ if (rootElement) {
   <StrictMode>
     <ContextVariablesProvider>
       <AuthContextProvider>
+        <Analytics />
         <App />
       </AuthContextProvider>
     </ContextVariablesProvider>
