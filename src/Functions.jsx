@@ -23,7 +23,7 @@ export const generate_payment_link_hubtel = (domain, apiKey, formError, token, p
     const data = {
         "clientReference": paymentData.clientReference,
         "currency": "GHS",
-        "amountGHS": adjustedAmountGHS,
+        "amountGHS": adjustedAmountGHS.toFixed(2),
         "cryptoAmount": parseFloat(orderData.cryptoAmount),
         "fee": orderData.fee,
         "email": "test@theplutushome.com",
@@ -73,7 +73,7 @@ export const generate_payment_link_redde = (domain, apiKey, formError, token, pa
     const data = {
         "clientReference": paymentData.clientReference,
         "currency": "GHS",
-        "amountGHS": adjustedAmountGHS,
+        "amountGHS": adjustedAmountGHS.toFixed(2),
         "cryptoAmount": parseFloat(orderData.cryptoAmount),
         "fee": orderData.fee,
         "email": "test@theplutushome.com",
