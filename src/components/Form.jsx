@@ -3,11 +3,11 @@ import { useContext, useEffect, useState } from 'react';
 import logo from '../assets/img/pee.jpg';
 import Footer from './Footer';
 import ContextVariables from '../context/ContextVariables';
-import { generate_payment_link_hubtel, generate_payment_link_redde, validateCryptoWallet } from '../Functions';
+import { generate_payment_link_hubtel, validateCryptoWallet } from '../Functions';
 import { AnimatePresence, motion } from 'framer-motion';
 import axios from "axios";
 import hubtelLogo from '../assets/img/hubtellogo.svg';
-import reddeLogo from '../assets/img/reddes-logo.png';
+// import reddeLogo from '../assets/img/reddes-logo.png';
 
 
 const Form = () => {
@@ -27,7 +27,7 @@ const Form = () => {
   const [walletError, setWalletError] = useState(false);
   const [phoneError, setPhoneError] = useState(false);
   const [hubtelLoading, setHubtelLoading] = useState(false);
-  const [reddeLoading, setReddeLoading] = useState(false);
+  const [setReddeLoading] = useState(false);
 
   const paymentData = {
     clientReference: `Payment_${Date.now()}`,
@@ -167,9 +167,10 @@ const Form = () => {
     }
     if (type === 'hubtel') {
       generate_payment_link_hubtel(domain, apiKey, setFormError, null, paymentData, orderData, () => setHubtelLoading(false));
-    } else if (type === 'redde') {
-      generate_payment_link_redde(domain, apiKey, setFormError, null, paymentData, orderData, () => setReddeLoading(false));
     }
+    // } else if (type === 'redde') {
+    //   generate_payment_link_redde(domain, apiKey, setFormError, null, paymentData, orderData, () => setReddeLoading(false));
+    // }
 
     reset();
     setCrypto('');
@@ -415,9 +416,9 @@ const Form = () => {
             </table>
             {/* Submit Button */}
 
-            <div className="block w-full text-center">
+            {/* <div className="block w-full text-center">
               <span>Pay with</span>
-            </div>
+            </div> */}
 
             <div className="flex flex-row gap-3">
 
@@ -444,7 +445,7 @@ const Form = () => {
                   </span>
                 </motion.button>
               )}
-{/* 
+              {/* 
               {reddeLoading ? (
                 <motion.button
                   whileTap={{ scale: 0.95 }}
