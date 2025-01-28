@@ -23,12 +23,12 @@ export const generate_payment_link_hubtel = (domain, apiKey, formError, token, p
     const data = {
         "clientReference": paymentData.clientReference,
         "currency": "GHS",
-        "amountGHS": adjustedAmountGHS,
+        "amountGHS": adjustedAmountGHS.toFixed(2),
         "cryptoAmount": parseFloat(orderData.cryptoAmount),
         "fee": orderData.fee,
         "email": "test@theplutushome.com",
         "crypto": orderData.crypto,
-        "phone": orderData.phoneNumber,
+        "phoneNumber": orderData.phoneNumber,
         "rate": orderData.rate,
         "address": orderData.address,
         "transactionId": orderData.transactionId
@@ -73,12 +73,12 @@ export const generate_payment_link_redde = (domain, apiKey, formError, token, pa
     const data = {
         "clientReference": paymentData.clientReference,
         "currency": "GHS",
-        "amountGHS": adjustedAmountGHS,
+        "amountGHS": adjustedAmountGHS.toFixed(2),
         "cryptoAmount": parseFloat(orderData.cryptoAmount),
         "fee": orderData.fee,
         "email": "test@theplutushome.com",
         "crypto": orderData.crypto,
-        "phone": orderData.phoneNumber,
+        "phoneNumber": orderData.phoneNumber,
         "rate": orderData.rate,
         "address": orderData.address,
         "transactionId": orderData.transactionId
