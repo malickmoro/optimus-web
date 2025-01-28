@@ -438,7 +438,7 @@ const Form = () => {
                   </span>
                 </motion.button>
               )}
-
+{/* 
               {reddeLoading ? (
                 <motion.button
                   whileTap={{ scale: 0.95 }}
@@ -461,7 +461,7 @@ const Form = () => {
                     Pay with Redde
                   </span>
                 </motion.button>
-              )}
+              )} */}
             </div>
           </form>
         </div>
