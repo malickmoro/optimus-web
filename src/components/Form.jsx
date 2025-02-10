@@ -167,6 +167,7 @@ const Form = () => {
     }
     if (type === 'hubtel') {
       generate_payment_link_hubtel(domain, apiKey, setFormError, null, paymentData, orderData, () => setHubtelLoading(false));
+
     } else if (type === 'redde') {
       generate_payment_link_redde(domain, apiKey, setFormError, null, paymentData, orderData, () => setReddeLoading(false));
     }
