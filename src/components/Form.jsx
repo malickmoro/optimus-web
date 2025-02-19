@@ -112,6 +112,12 @@ const Form = () => {
       setUSDAmount(0);
       return;
     }
+
+    console.log("cryptoAmount:", cryptoAmount);
+    console.log("exchangeRate:", exchangeRate);
+    console.log("fee:", fee);
+    console.log("cediRate:", cediRate);
+    
     const usdAmount = cryptoAmount * exchangeRate;
     const totalPay = usdAmount + fee;
 
@@ -401,7 +407,7 @@ const Form = () => {
             <table className="w-full mt-5">
               <tbody>
                 <tr>
-                  <td className="font-bold text-md text-left">Exchange Rate</td>
+                  <td className="font-bold text-md text-left">{crypto.toUpperCase} Price</td>
                   <td className="font-medium text-md text-right">${exchangeRate}</td>
                 </tr>
                 <tr>
