@@ -8,6 +8,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import axios from "axios";
 import hubtelLogo from '../assets/img/hubtellogo.svg';
 import reddeLogo from '../assets/img/reddes-logo.png';
+import LoadingModal from './LoadingModal';
 
 
 const Form = () => {
@@ -28,10 +29,11 @@ const Form = () => {
   const [phoneError, setPhoneError] = useState(false);
   const [hubtelLoading, setHubtelLoading] = useState(false);
   const [reddeLoading, setReddeLoading] = useState(false);
+  const isLoading = hubtelLoading || reddeLoading;
 
   const paymentData = {
     clientReference: `Payment_${Date.now()}`,
-    amountGHS: amountToPay,
+    amountGHS: parseFloat(amountToPay),
   };
 
 
@@ -113,15 +115,10 @@ const Form = () => {
       return;
     }
 
-    console.log("cryptoAmount:", cryptoAmount);
-    console.log("exchangeRate:", exchangeRate);
-    console.log("fee:", fee);
-    console.log("cediRate:", cediRate);
-    
     const usdAmount = cryptoAmount * exchangeRate;
-    const totalPay = usdAmount + fee;
+    const totalPay = usdAmount + parseFloat(fee);
 
-    setAmountToPay(totalPay * cediRate);
+    setAmountToPay((totalPay * cediRate).toFixed(2));
     setUSDAmount(usdAmount.toFixed(2));
   };
 
@@ -240,8 +237,10 @@ const Form = () => {
 
   return (
     <div className="md:w-[50%] w-full p-2 md:px-10">
+      {/* Render the loading modal */}
+      <LoadingModal isLoading={isLoading} />
       <div className="flex flex-col justify-center items-center py-5">
-        <img alt="Plutus Logo" width="100" height="100" className="h-20 w-auto" style={{ color: 'transparent' }} src={logo} />
+        {/* <img alt="Plutus Logo" width="100" height="100" className="h-20 w-auto" style={{ color: 'transparent' }} src={logo} /> */}
         <h2 className="text-[1.3rem] md:text-[1.3rem] text-center font-black text-transparent bg-gradient-to-r from-[#fafcff] to-[#ffdfdc] bg-clip-text drop-shadow-sm shadow-cyan-500 uppercase ">
           THE PLUTUS HOME
         </h2>
@@ -407,7 +406,7 @@ const Form = () => {
             <table className="w-full mt-5">
               <tbody>
                 <tr>
-                  <td className="font-bold text-md text-left">{crypto.toUpperCase} Price</td>
+                  <td className="font-bold text-md text-left">{crypto.toUpperCase()} Price</td>
                   <td className="font-medium text-md text-right">${exchangeRate}</td>
                 </tr>
                 <tr>

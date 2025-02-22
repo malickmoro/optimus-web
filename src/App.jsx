@@ -5,22 +5,23 @@ import "./index.css";
 import HomePage from './pages/Home/Home';
 import { WhatsAppWidget } from 'react-whatsapp-widget';
 import 'react-whatsapp-widget/dist/index.css';
+import { ContextVariablesProvider } from './context/ContextVariables';
 
 
 const App = () => {
-  const [setWidth] = useState(window.innerWidth);
+  // const [setWidth] = useState(window.innerWidth);
 
   useEffect(() => {
     const handleResize = () => {
-      setWidth(window.innerWidth);
+      // setWidth(window.innerWidth);
     };
 
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, [setWidth]);
+  }, []);
 
   return (<>
-
+    <ContextVariablesProvider>
     <BrowserRouter>
       <Routes>
         <Route path="/*" element={<HomePage />} />
@@ -29,11 +30,12 @@ const App = () => {
     <WhatsAppWidget
       phoneNumber="233552767658"
       replyTimeText="Typically replies instantly"
-      companyName="The Plutus Home"
+      companyName="King Plutus"
       inputPlaceHolder="Reply"
-      message="Any way I could help you?"
+      message="What's up my gee?"
       
       />
+      </ContextVariablesProvider>
   </>
 
   );
