@@ -133,35 +133,35 @@ const Form = () => {
 
     if (!crypto) {
       setFormError("Please select a cryptocurrency to buy.");
-      setTimeout(() => { setFormError(""); setHubtelLoading(false); setReddeLoading(false); }, 2000);
+      setTimeout(() => { setFormError(""); setHubtelLoading(false); setReddeLoading(false); }, 500);
       return;
     } else if (USDAmount <= 0 || USDAmount < minimumUSDAmount) {
       setAmountError(`Minimum usd amount to buy is $5`);
-      setTimeout(() => { setAmountError(""); setHubtelLoading(false); setReddeLoading(false); }, 2000);
+      setTimeout(() => { setAmountError(""); setHubtelLoading(false); setReddeLoading(false); }, 500);
       return;
     } else if (!cryptoAmount) {
       setAmountError("Crypto amount must be greater than 0.");
-      setTimeout(() => { setAmountError(""); setHubtelLoading(false); setReddeLoading(false); }, 2000);
+      setTimeout(() => { setAmountError(""); setHubtelLoading(false); setReddeLoading(false); }, 500);
       return;
     } else if (walletAddress?.length === 0) {
       setWalletError("Please enter a valid wallet address.");
-      setTimeout(() => { setWalletError(""); setHubtelLoading(false); setReddeLoading(false); }, 2000);
+      setTimeout(() => { setWalletError(""); setHubtelLoading(false); setReddeLoading(false); }, 500);
       return;
     } else if (!await validateCryptoWallet(crypto, walletAddress)) {
       setWalletError(`Invalid ${crypto} wallet`);
-      setTimeout(() => { setWalletError(""); setHubtelLoading(false); setReddeLoading(false); }, 1000);
+      setTimeout(() => { setWalletError(""); setHubtelLoading(false); setReddeLoading(false); }, 500);
       return;
     } else if (cryptoAmount <= 0) {
       setAmountError("Please enter a valid cryptocurrency amount.");
-      setTimeout(() => { setAmountError(""); setHubtelLoading(false); setReddeLoading(false); }, 2000);
+      setTimeout(() => { setAmountError(""); setHubtelLoading(false); setReddeLoading(false); }, 500);
       return;
     } else if (!/^\d{10}$/.test(phoneNumber)) {
       setPhoneError("Phone number must be 10 digits long.");
-      setTimeout(() => { setPhoneError(""); setHubtelLoading(false); setReddeLoading(false); }, 2000);
+      setTimeout(() => { setPhoneError(""); setHubtelLoading(false); setReddeLoading(false); }, 500);
       return;
     } else if (!/^0[25]/.test(phoneNumber)) {
       setPhoneError("Phone number must begin with 0 and be followed by 5 or 2.");
-      setTimeout(() => { setPhoneError(""); setHubtelLoading(false); setReddeLoading(false); }, 2000);
+      setTimeout(() => { setPhoneError(""); setHubtelLoading(false); setReddeLoading(false); }, 500);
       return;
     }
 
