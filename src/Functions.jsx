@@ -42,8 +42,8 @@ export const generate_payment_link_hubtel = (domain, apiKey, formError, token, p
             const result = response.data;
             if (result.status && result.data && result.data.checkoutUrl) {
                 let paymentUrl = result.data.checkoutUrl;
-                onSuccess();
                 window.location.href = paymentUrl;
+                onSuccess();
             } else {
                 formError("Error generating payment link");
                 onSuccess();
@@ -92,8 +92,8 @@ export const generate_payment_link_redde = (domain, apiKey, formError, token, pa
             const result = response.data;
             if (result && result.checkouturl) {
                 let paymentUrl = result.checkouturl;
-                onSuccess();
                 window.location.href = paymentUrl;
+                onSuccess();
             } else {
                 formError("Error generating payment link");
                 onSuccess();
