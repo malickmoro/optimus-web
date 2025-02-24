@@ -143,8 +143,8 @@ export const begin_payment = (domain, apiKey, formError, token, paymentData, ord
             updatePlutusAuth("amount", adjustedAmountGHS);
             const result = response.data;
             console.log(result);
-            onSuccess();
             window.location.href = "/payment";
+            onSuccess();
         })
         .catch((error) => {
             if (error.status === 400) {
