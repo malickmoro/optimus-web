@@ -188,8 +188,6 @@ const Form = () => {
     setFee(0.0);
     setExchangeRate(0.0);
     setAmountToPay(0.0);
-    setHubtelLoading(false);
-    setReddeLoading(false);
   }
 
   useEffect(() => {
