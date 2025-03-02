@@ -150,35 +150,51 @@ const Form = () => {
 
     if (!crypto) {
       setFormError("Please select a cryptocurrency to buy.");
-      setTimeout(() => { setFormError(""); setHubtelLoading(false); setReddeLoading(false); }, 500);
+      setHubtelLoading(false);
+      setReddeLoading(false);
+      setTimeout(() => { setFormError("") }, 3000);
       return;
-    } else if (USDAmount <= 0 || USDAmount < minimumUSDAmount) {
-      setAmountError(`Minimum usd amount to buy is $5`);
-      setTimeout(() => { setAmountError(""); setHubtelLoading(false); setReddeLoading(false); }, 500);
+    } else if (parseFloat(USDAmount) <= 0 || parseFloat(USDAmount) < parseFloat(minimumUSDAmount)) {
+      setAmountError(`Minimum USD amount to buy is $5`);
+      setHubtelLoading(false);
+      setReddeLoading(false);
+      setTimeout(() => { setFormError("") }, 3000);
       return;
     } else if (!cryptoAmount) {
       setAmountError("Crypto amount must be greater than 0.");
-      setTimeout(() => { setAmountError(""); setHubtelLoading(false); setReddeLoading(false); }, 500);
+      setHubtelLoading(false);
+      setReddeLoading(false);
+      setTimeout(() => { setFormError("") }, 3000);
       return;
     } else if (walletAddress?.length === 0) {
       setWalletError("Please enter a valid wallet address.");
-      setTimeout(() => { setWalletError(""); setHubtelLoading(false); setReddeLoading(false); }, 500);
+      setHubtelLoading(false);
+      setReddeLoading(false);
+      setTimeout(() => { setFormError("") }, 3000);
       return;
     } else if (!await validateCryptoWallet(crypto, walletAddress)) {
       setWalletError(`Invalid ${crypto} wallet`);
-      setTimeout(() => { setWalletError(""); setHubtelLoading(false); setReddeLoading(false); }, 500);
+      setHubtelLoading(false);
+      setReddeLoading(false);
+      setTimeout(() => { setFormError("") }, 3000);
       return;
     } else if (cryptoAmount <= 0) {
       setAmountError("Please enter a valid cryptocurrency amount.");
-      setTimeout(() => { setAmountError(""); setHubtelLoading(false); setReddeLoading(false); }, 500);
+      setHubtelLoading(false);
+      setReddeLoading(false);
+      setTimeout(() => { setFormError("") }, 3000);
       return;
     } else if (!/^\d{10}$/.test(phoneNumber)) {
       setPhoneError("Phone number must be 10 digits long.");
-      setTimeout(() => { setPhoneError(""); setHubtelLoading(false); setReddeLoading(false); }, 500);
+      setHubtelLoading(false);
+      setReddeLoading(false);
+      setTimeout(() => { setFormError("") }, 3000);
       return;
     } else if (!/^0[25]/.test(phoneNumber)) {
       setPhoneError("Phone number must begin with 0 and be followed by 5 or 2.");
-      setTimeout(() => { setPhoneError(""); setHubtelLoading(false); setReddeLoading(false); }, 500);
+      setHubtelLoading(false);
+      setReddeLoading(false);
+      setTimeout(() => { setFormError("") }, 3000);
       return;
     }
 
@@ -227,18 +243,19 @@ const Form = () => {
         // Parsing exchange rate and fees
         const exchangeRate = parseFloat(response?.data?.result[0]?.course || "0").toFixed(2);
         const withdrawalFee = Math.ceil(parseFloat(response?.data?.result[0]?.withdrawalFee || "0") * 100) / 100;
+        const USDAmountFloat = parseFloat(USDAmount);
 
-        // Additional fee calculation
-        const additionalFee = USDAmount > 100 ? 0.05 * USDAmount :
-          USDAmount >= 51 ? 4 :
-            USDAmount >= 0 ? 3 : 0;
+        const additionalFee = USDAmountFloat > 100 ? 0.05 * USDAmountFloat :
+          USDAmountFloat >= 50 ? 4 :
+            USDAmountFloat >= 0 ? 3 : 0;
 
-        const totalFeeUSD = (withdrawalFee + additionalFee).toFixed(2);
+        const totalFeeUSD = parseFloat((withdrawalFee + additionalFee).toFixed(2));
         const min = totalFeeUSD + 2;
 
         setMinimunUSDAmount(min);
-        setFee(totalFeeUSD);
+        setFee(totalFeeUSD.toFixed(2));
         setExchangeRate(exchangeRate);
+
       } catch (error) {
         if (error.name !== "CanceledError") { // Ignore cancellation errors
           console.error(error);
