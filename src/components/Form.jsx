@@ -16,6 +16,7 @@ const Form = () => {
   const { domain, apiKey, cediRate } = useContext(ContextVariables);
   const [crypto, setCrypto] = useState('');
   const [USDAmount, setUSDAmount] = useState(0.0);
+  const [GHSAmount, setGHSAmount] = useState(0.0);
   const [cryptoAmount, setCryptoAmount] = useState(0.0);
   const [phoneNumber, setPhoneNumber] = useState('');
   const [walletAddress, setWalletAddress] = useState('');
@@ -98,20 +99,35 @@ const Form = () => {
   const handleUSDAmountChange = async () => {
     if (USDAmount < 1 || exchangeRate <= 0) {
       setAmountToPay(0);
+      setGHSAmount(0);
       setCryptoAmount(0);
       return;
     }
     const totalUSDAmount = parseFloat(USDAmount) + parseFloat(fee);
     setCryptoAmount((USDAmount / exchangeRate).toFixed(8));
+    setGHSAmount((totalUSDAmount * cediRate).toFixed(2));
     setAmountToPay((totalUSDAmount * cediRate).toFixed(2));
   };
 
-
+  const handleGHSAmountChange = async () => {
+    if (GHSAmount < 1 || exchangeRate <= 0) {
+      setAmountToPay(0);
+      setCryptoAmount(0);
+      setUSDAmount(0);
+      return;
+    }
+    const usdAmount = (GHSAmount / cediRate) - parseFloat(fee);
+    const totalPay = usdAmount + parseFloat(fee);
+    setCryptoAmount((usdAmount / exchangeRate).toFixed(8));
+    setUSDAmount(usdAmount.toFixed(2));
+    setAmountToPay((totalPay * cediRate).toFixed(2));
+  };
 
   const handleCryptoAmountChange = async () => {
     if (!(cryptoAmount > 0) || exchangeRate <= 0) {
       setAmountToPay(0);
       setUSDAmount(0);
+      setGHSAmount(0);
       return;
     }
 
@@ -120,6 +136,7 @@ const Form = () => {
 
     setAmountToPay((totalPay * cediRate).toFixed(2));
     setUSDAmount(usdAmount.toFixed(2));
+    setGHSAmount((totalPay * cediRate).toFixed(2));
   };
 
 
@@ -191,59 +208,64 @@ const Form = () => {
   }
 
   useEffect(() => {
+    const controller = new AbortController(); // For request cancellation
     const updateValues = async () => {
-      if (crypto) {  // Only run if crypto is selected
-        try {
-          const response = await axios.get(
-            `${domain}/optimus/v1/api/cryptomus/exchange-rate/${crypto}?to=USD`,
-            {
-              headers: {
-                "Content-Type": "application/json",
-                "X-API-KEY": apiKey,
-              },
-            }
-          );
-          // Rest of your exchange rate logic here
-          const exchangeRate = parseFloat(response?.data?.result[0]?.course).toFixed(2);
-          const withdrawalFee = Math.ceil(parseFloat(response?.data?.result[0]?.withdrawalFee) * 100) / 100;
+      if (!crypto) return; // Exit if crypto is not selected
 
-          let additionalFee = 0;
-          if (USDAmount >= 0 && USDAmount <= 50) {
-            additionalFee = 3;
-          } else if (USDAmount >= 51 && USDAmount <= 100) {
-            additionalFee = 4;
-          } else if (USDAmount > 100) {
-            additionalFee = 0.05 * USDAmount;
+      try {
+        const response = await axios.get(
+          `${domain}/optimus/v1/api/cryptomus/exchange-rate/${crypto}?to=USD`,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              "X-API-KEY": apiKey,
+            },
+            signal: controller.signal, // Attach the abort signal
           }
+        );
 
-          const totalFeeUSD = withdrawalFee + additionalFee;
-          const min = totalFeeUSD + 2;
-          setMinimunUSDAmount(min);
-          setFee(totalFeeUSD.toFixed(2));
-          setExchangeRate(exchangeRate);
-        } catch (error) {
-          console.log(error);
+        // Parsing exchange rate and fees
+        const exchangeRate = parseFloat(response?.data?.result[0]?.course || "0").toFixed(2);
+        const withdrawalFee = Math.ceil(parseFloat(response?.data?.result[0]?.withdrawalFee || "0") * 100) / 100;
+
+        // Additional fee calculation
+        const additionalFee = USDAmount > 100 ? 0.05 * USDAmount :
+          USDAmount >= 51 ? 4 :
+            USDAmount >= 0 ? 3 : 0;
+
+        const totalFeeUSD = (withdrawalFee + additionalFee).toFixed(2);
+        const min = totalFeeUSD + 2;
+
+        setMinimunUSDAmount(min);
+        setFee(totalFeeUSD);
+        setExchangeRate(exchangeRate);
+      } catch (error) {
+        if (error.name !== "CanceledError") { // Ignore cancellation errors
+          console.error(error);
           setFormError("Error fetching fee");
-          setTimeout(() => { setFormError("") }, 1000);
+          setTimeout(() => setFormError(""), 1000);
         }
       }
     };
 
     updateValues();
-  }, [crypto, USDAmount, walletAddress, domain, apiKey]);
+
+    return () => controller.abort(); // Clean up on component unmount
+  }, [crypto, USDAmount, domain, apiKey]); // Optimized dependencies
+
 
 
   return (
     <div className="md:w-[50%] w-full p-2 md:px-10">
       {/* Render the loading modal */}
       <LoadingModal isLoading={isLoading} />
-      <div className="flex flex-col justify-center items-center py-5">
+      <div className="flex flex-col justify-center items-center py-2">
         {/* <img alt="Plutus Logo" width="100" height="100" className="h-20 w-auto" style={{ color: 'transparent' }} src={logo} /> */}
         <h2 className="text-[1.3rem] md:text-[1.3rem] text-center font-black text-transparent bg-gradient-to-r from-[#fafcff] to-[#ffdfdc] bg-clip-text drop-shadow-sm shadow-cyan-500 uppercase ">
           THE PLUTUS HOME
         </h2>
       </div>
-      <div className="py-5">
+      <div className="py-3">
         <h1 className="text-[1.3rem] md:text-[1.3rem] text-center font-black text-transparent bg-gradient-to-r from-[#fafcff] to-[#ffdfdc] bg-clip-text drop-shadow-sm shadow-cyan-500 ">
           LTC | XMR | USDT | BTC
         </h1>
@@ -265,11 +287,17 @@ const Form = () => {
               </motion.p>
             )}
           </AnimatePresence>
-          <form onSubmit={handleSubmit} className="w-full mt-5 flex flex-col gap-5">
+          <form onSubmit={handleSubmit} className="w-full mt-1 flex flex-col gap-5">
             <div className="space-y-2">
-              <label className="font-medium text-md" htmlFor="voucher">
-                Select Crypto
-              </label>
+              <div className='flex justify-between items-center'>
+                <label className="font-medium text-md" htmlFor="voucher">
+                  Select Crypto
+                </label>
+
+                <label className="font-medium text-md" htmlFor="amount_usd">
+                  Cedi Rate({cediRate})
+                </label>
+              </div>
               <select
                 id="voucher"
                 value={crypto}
@@ -300,26 +328,47 @@ const Form = () => {
                 </motion.p>
               )}
             </AnimatePresence>
-            <div className="space-y-2">
-              <label className="font-medium text-md" htmlFor="amount_usd">
-                Amount (USD) - Cedi Rate({cediRate})
-              </label>
-              <input
-                type="number"
-                id="amount_usd"
-                value={USDAmount}
-                inputMode='decimal'
-                onChange={(e) => {
-                  setUSDAmount(e.target.value);
-                }}
-                onKeyUp={() => {
-                  handleUSDAmountChange();
-                }}
-                className="h-10 w-full px-3 py-2 bg-neutral-700 border border-neutral-600"
-                placeholder="Amount in USD"
-              />
-            </div>
+            <div className="flex flex-row gap-5">
+              <div className="space-y-2">
+                <label className="font-medium text-md" htmlFor="amount_usd">
+                  Amount (USD)
+                </label>
+                <input
+                  type="number"
+                  id="amount_usd"
+                  value={USDAmount}
+                  inputMode='decimal'
+                  onChange={(e) => {
+                    setUSDAmount(e.target.value);
+                  }}
+                  onKeyUp={() => {
+                    handleUSDAmountChange();
+                  }}
+                  className="h-10 w-full px-3 py-2 bg-neutral-700 border border-neutral-600"
+                  placeholder="Amount in USD"
+                />
+              </div>
 
+              <div className="space-y-2">
+                <label className="font-medium text-md" htmlFor="amount_ghs">
+                  Amount (GHS)
+                </label>
+                <input
+                  type="number"
+                  id="amount_ghs"
+                  value={GHSAmount}
+                  inputMode='decimal'
+                  onChange={(e) => {
+                    setGHSAmount(e.target.value);
+                  }}
+                  onKeyUp={() => {
+                    handleGHSAmountChange();
+                  }}
+                  className="h-10 w-full px-3 py-2 bg-neutral-700 border border-neutral-600"
+                  placeholder="Amount in GHS"
+                />
+              </div>
+            </div>
             <div className="space-y-2">
               <label className="font-medium text-md" htmlFor="amount_crypto">
                 Amount ({crypto})
@@ -476,7 +525,7 @@ const Form = () => {
           </form>
         </div>
       </div>
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 };
