@@ -14,7 +14,7 @@ export const inMobileView = () => {
 export const generate_payment_link_hubtel = (domain, apiKey, formError, token, paymentData, orderData, onSuccess) => {
 
     const url = domain + "/optimus/v1/api/payment/generate";
-    const adjustedAmountGHS = parseFloat(paymentData.amountGHS) + (parseFloat(paymentData.amountGHS) * 0.02);
+    // const adjustedAmountGHS = parseFloat(paymentData.amountGHS) + (parseFloat(paymentData.amountGHS) * 0.02);
     const headers = {
         "X-API-KEY": apiKey,
         "Content-Type": "application/json",
@@ -23,7 +23,7 @@ export const generate_payment_link_hubtel = (domain, apiKey, formError, token, p
     const data = {
         "clientReference": paymentData.clientReference,
         "currency": "GHS",
-        "amountGHS": adjustedAmountGHS.toFixed(2),
+        "amountGHS": paymentData.amountGHS.toFixed(2),
         "cryptoAmount": parseFloat(orderData.cryptoAmount),
         "fee": orderData.fee,
         "email": "test@theplutushome.com",
@@ -64,7 +64,7 @@ export const generate_payment_link_hubtel = (domain, apiKey, formError, token, p
 
 export const generate_payment_link_redde = (domain, apiKey, formError, token, paymentData, orderData, onSuccess) => {
     const url = domain + "/optimus/v1/api/payment/redde/checkout";
-    const adjustedAmountGHS = parseFloat(paymentData.amountGHS) + (parseFloat(paymentData.amountGHS) * 0.02);
+    // const adjustedAmountGHS = parseFloat(paymentData.amountGHS) + (parseFloat(paymentData.amountGHS) * 0.02);
     const headers = {
         "X-API-KEY": apiKey,
         "Content-Type": "application/json",
@@ -73,7 +73,7 @@ export const generate_payment_link_redde = (domain, apiKey, formError, token, pa
     const data = {
         "clientReference": paymentData.clientReference,
         "currency": "GHS",
-        "amountGHS": adjustedAmountGHS.toFixed(2),
+        "amountGHS": paymentData.amountGHS.toFixed(2),
         "cryptoAmount": parseFloat(orderData.cryptoAmount),
         "fee": orderData.fee,
         "email": "test@theplutushome.com",
@@ -116,7 +116,7 @@ export const generate_payment_link_redde = (domain, apiKey, formError, token, pa
 export const begin_payment = (domain, apiKey, formError, token, paymentData, orderData, onSuccess) => {
 
     const url = domain + "/optimus/v1/api/payment/initiate";
-    const adjustedAmountGHS = (parseFloat(paymentData.amountGHS) + (parseFloat(paymentData.amountGHS) * 0.02)).toFixed(2);
+    // const adjustedAmountGHS = (parseFloat(paymentData.amountGHS) + (parseFloat(paymentData.amountGHS) * 0.02)).toFixed(2);
     const headers = {
         "X-API-KEY": apiKey,
         "Content-Type": "application/json",
@@ -125,7 +125,7 @@ export const begin_payment = (domain, apiKey, formError, token, paymentData, ord
 
     const data = {
         "clientReference": paymentData.clientReference,
-        "amountGHS": adjustedAmountGHS,
+        "amountGHS": paymentData.amountGHS,
         "cryptoAmount": parseFloat(orderData.cryptoAmount),
         "fee": orderData.fee,
         "crypto": orderData.crypto,

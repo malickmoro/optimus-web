@@ -355,7 +355,7 @@ const Form = () => {
                   id="amount_usd"
                   value={USDAmount}
                   inputMode='decimal'
-                  onChange={(e) => {
+                  onInput={(e) => {
                     setUSDAmount(e.target.value);
                   }}
                   onKeyUp={() => {
@@ -378,7 +378,7 @@ const Form = () => {
                   onChange={(e) => {
                     setGHSAmount(e.target.value);
                   }}
-                  onKeyUp={() => {
+                  onInput={() => {
                     handleGHSAmountChange();
                   }}
                   className="h-10 w-full px-3 py-2 bg-neutral-700 border border-neutral-600"
@@ -395,7 +395,7 @@ const Form = () => {
                 id="amount_crypto"
                 inputMode='decimal'
                 value={cryptoAmount}
-                onChange={(e) => {
+                onInput={(e) => {
                   setCryptoAmount(e.target.value);
                 }}
                 onKeyUp={() => {
