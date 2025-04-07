@@ -378,7 +378,7 @@ const Form = () => {
                   onChange={(e) => {
                     setGHSAmount(e.target.value);
                   }}
-                  onInput={() => {
+                  onKeyUp={() => {
                     handleGHSAmountChange();
                   }}
                   className="h-10 w-full px-3 py-2 bg-neutral-700 border border-neutral-600"
