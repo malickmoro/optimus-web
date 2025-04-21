@@ -385,7 +385,7 @@ const Form = () => {
                   id="amount_usd"
                   value={USDAmount}
                   inputMode='decimal'
-                  onChange={(e) => {
+                  onInput={(e) => {
                     setUSDAmount(e.target.value);
                   }}
                   onKeyUp={() => {
@@ -425,7 +425,7 @@ const Form = () => {
                 id="amount_crypto"
                 inputMode='decimal'
                 value={cryptoAmount}
-                onChange={(e) => {
+                onInput={(e) => {
                   setCryptoAmount(e.target.value);
                 }}
                 onKeyUp={() => {
