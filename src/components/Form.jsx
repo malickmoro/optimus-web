@@ -74,13 +74,16 @@ const Form = () => {
       // Determine fee based on the purchase amount
       let additionalFee = 0;
 
-      if (USDAmount >= 0 && USDAmount <= 50) {
+      if (USDAmount >= 1 && USDAmount < 50) {
         additionalFee = 3;
-      } else if (USDAmount >= 51 && USDAmount <= 100) {
+      } else if (USDAmount >= 50 && USDAmount <= 100) {
         additionalFee = 4;
       } else if (USDAmount > 100) {
-        additionalFee = 0.05 * USDAmount; // 5% of the purchase amount
+        additionalFee = 0.05 * USDAmount;
+      } else {
+        additionalFee = 0; // For cases where USDAmount < 1
       }
+
 
       const totalFeeUSD = withdrawalFee + additionalFee;
       const min = totalFeeUSD + 2;
@@ -95,6 +98,19 @@ const Form = () => {
     }
   };
 
+  const calculateFee = (usdAmount) => {
+    if (usdAmount >= 1 && usdAmount < 50) {
+      return 3;
+    } else if (usdAmount >= 50 && usdAmount <= 100) {
+      return 4;
+    } else if (usdAmount > 100) {
+      return 0.05 * usdAmount;
+    } else {
+      return 0;
+    }
+  };
+
+
   // Function to handle quantity change
   const handleUSDAmountChange = async () => {
     if (USDAmount < 1 || exchangeRate <= 0) {
@@ -103,11 +119,15 @@ const Form = () => {
       setCryptoAmount(0);
       return;
     }
-    const totalUSDAmount = parseFloat(USDAmount) + parseFloat(fee);
+
+    const additionalFee = calculateFee(USDAmount);
+    const totalUSDAmount = parseFloat(USDAmount) + parseFloat(additionalFee);
+
     setCryptoAmount((USDAmount / exchangeRate).toFixed(8));
     setGHSAmount((totalUSDAmount * cediRate).toFixed(2));
     setAmountToPay((totalUSDAmount * cediRate).toFixed(2));
   };
+
 
   const handleGHSAmountChange = async () => {
     if (GHSAmount < 1 || exchangeRate <= 0) {
@@ -116,12 +136,17 @@ const Form = () => {
       setUSDAmount(0);
       return;
     }
-    const usdAmount = (GHSAmount / cediRate) - parseFloat(fee);
-    const totalPay = usdAmount + parseFloat(fee);
+
+    const estimatedUSDAmount = GHSAmount / cediRate;
+    const additionalFee = calculateFee(estimatedUSDAmount);
+    const usdAmount = estimatedUSDAmount - additionalFee;
+    const totalPay = usdAmount + additionalFee;
+
     setCryptoAmount((usdAmount / exchangeRate).toFixed(8));
     setUSDAmount(usdAmount.toFixed(2));
     setAmountToPay((totalPay * cediRate).toFixed(2));
   };
+
 
   const handleCryptoAmountChange = async () => {
     if (!(cryptoAmount > 0) || exchangeRate <= 0) {
@@ -132,12 +157,14 @@ const Form = () => {
     }
 
     const usdAmount = cryptoAmount * exchangeRate;
-    const totalPay = usdAmount + parseFloat(fee);
+    const additionalFee = calculateFee(usdAmount);
+    const totalPay = usdAmount + additionalFee;
 
     setAmountToPay((totalPay * cediRate).toFixed(2));
     setUSDAmount(usdAmount.toFixed(2));
     setGHSAmount((totalPay * cediRate).toFixed(2));
   };
+
 
 
   // Function to handle form submission
@@ -244,10 +271,13 @@ const Form = () => {
         const exchangeRate = parseFloat(response?.data?.result[0]?.course || "0").toFixed(2);
         const withdrawalFee = Math.ceil(parseFloat(response?.data?.result[0]?.withdrawalFee || "0") * 100) / 100;
         const USDAmountFloat = parseFloat(USDAmount);
-
-        const additionalFee = USDAmountFloat > 100 ? 0.05 * USDAmountFloat :
-          USDAmountFloat >= 50 ? 4 :
-            USDAmountFloat >= 0 ? 3 : 0;
+        const additionalFee = USDAmountFloat > 100
+          ? 0.05 * USDAmountFloat
+          : USDAmountFloat >= 50 && USDAmountFloat <= 100
+            ? 4
+            : USDAmountFloat >= 1 && USDAmountFloat < 50
+              ? 3
+              : 0;
 
         const totalFeeUSD = parseFloat((withdrawalFee + additionalFee).toFixed(2));
         const min = totalFeeUSD + 2;
