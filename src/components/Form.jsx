@@ -86,7 +86,7 @@ const Form = () => {
 
 
       const totalFeeUSD = withdrawalFee + additionalFee;
-      const min = totalFeeUSD + 2;
+      const min = totalFeeUSD + 5;
       setMinimunUSDAmount(min);
       setFee(totalFeeUSD.toFixed(2));
       setExchangeRate(exchangeRate);
@@ -182,13 +182,13 @@ const Form = () => {
       setTimeout(() => { setFormError("") }, 3000);
       return;
     } else if (parseFloat(USDAmount) <= 0 || parseFloat(USDAmount) < parseFloat(minimumUSDAmount)) {
-      setAmountError(`Minimum USD amount to buy is $5`);
+      setAmountError(`Minimum USD amount to buy is $10.00`);
       setHubtelLoading(false);
       setReddeLoading(false);
       setTimeout(() => { setFormError("") }, 3000);
       return;
     } else if (!cryptoAmount) {
-      setAmountError("Crypto amount must be greater than 0.");
+      setAmountError("Crypto amount must be greater than 0.0");
       setHubtelLoading(false);
       setReddeLoading(false);
       setTimeout(() => { setFormError("") }, 3000);
@@ -280,7 +280,7 @@ const Form = () => {
               : 0;
 
         const totalFeeUSD = parseFloat((withdrawalFee + additionalFee).toFixed(2));
-        const min = totalFeeUSD + 2;
+        const min = totalFeeUSD + 5;
 
         setMinimunUSDAmount(min);
         setFee(totalFeeUSD.toFixed(2));
