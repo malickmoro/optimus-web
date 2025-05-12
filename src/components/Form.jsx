@@ -181,6 +181,18 @@ const Form = () => {
       setReddeLoading(false);
       setTimeout(() => { setFormError("") }, 3000);
       return;
+    } else if (crypto.toUpperCase() === "BTC" && (parseFloat(USDAmount) <= 0 || parseFloat(USDAmount) < parseFloat(11))) {
+      setAmountError(`Minimum USD amount to buy is $11.00`);
+      setHubtelLoading(false);
+      setReddeLoading(false);
+      setTimeout(() => { setFormError("") }, 3000);
+      return;
+    } else if (crypto.toUpperCase() === "LTC" && (parseFloat(USDAmount) <= 0 || parseFloat(USDAmount) < parseFloat(5))) {
+      setAmountError(`Minimum USD amount to buy is $5.00`);
+      setHubtelLoading(false);
+      setReddeLoading(false);
+      setTimeout(() => { setFormError("") }, 3000);
+      return;
     } else if (parseFloat(USDAmount) <= 0 || parseFloat(USDAmount) < parseFloat(minimumUSDAmount)) {
       setAmountError(`Minimum USD amount to buy is $10.00`);
       setHubtelLoading(false);
