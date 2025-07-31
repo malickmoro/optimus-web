@@ -1,5 +1,5 @@
 // src/components/Form.jsx
-import { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import ContextVariables from '../context/ContextVariables';
 import { generate_payment_link_hubtel, generate_payment_link_redde, validateCryptoWallet } from '../Functions';
