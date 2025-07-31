@@ -226,7 +226,7 @@ const Form = () => {
       return;
     }
 
-    // Validate wallet address
+    // Validate wallet address using validateCryptoWallet
     const isValidWallet = await validateCryptoWallet(crypto, walletAddress);
     if (!isValidWallet) {
       toast.error(`Invalid ${crypto} wallet address`);
