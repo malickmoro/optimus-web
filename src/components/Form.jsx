@@ -1,5 +1,7 @@
 // src/components/Form.jsx
 import React, { useContext, useEffect, useState, useCallback } from 'react';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { AnimatePresence, motion } from 'framer-motion';
 import ContextVariables from '../context/ContextVariables';
 import { generate_payment_link_hubtel, generate_payment_link_redde, validateCryptoWallet } from '../Functions';
@@ -32,9 +34,6 @@ const Form = () => {
   const [minimumUSDAmount, setMinimumUSDAmount] = useState(0.0);
   const [exchangeRate, setExchangeRate] = useState(0.0);
   const [formError, setFormError] = useState('');
-  const [amountError, setAmountError] = useState('');
-  const [walletError, setWalletError] = useState('');
-  const [phoneError, setPhoneError] = useState('');
   const [hubtelLoading, setHubtelLoading] = useState(false);
   const [reddeLoading, setReddeLoading] = useState(false);
   const isLoading = hubtelLoading || reddeLoading;
@@ -185,13 +184,10 @@ const Form = () => {
     }
   }, [amountInput, amountType, exchangeRate, cediRate, fee]);
 
-  // Your existing submit handler with proper validation
+  // Toast-based submit handler
   const handleSubmit = async (type) => {
-    // Clear previous errors
     setFormError('');
-    setAmountError('');
-    setWalletError('');
-    setPhoneError('');
+    // ...existing code...
 
     if (type === 'hubtel') {
       setHubtelLoading(true);
@@ -201,62 +197,55 @@ const Form = () => {
 
     // Validation checks
     if (!crypto) {
-      setFormError("Please select a cryptocurrency to buy.");
+      toast.error("Please select a cryptocurrency to buy.");
       setHubtelLoading(false);
       setReddeLoading(false);
-      setTimeout(() => { setFormError("") }, 3000);
       return;
     }
 
     const currentUSDAmount = parseFloat(USDAmount);
     if (currentUSDAmount <= 0 || currentUSDAmount < minimumUSDAmount) {
-      setAmountError(`Minimum USD amount to buy is ${minimumUSDAmount}`);
+      toast.error(`Minimum USD amount to buy is ${minimumUSDAmount}`);
       setHubtelLoading(false);
       setReddeLoading(false);
-      setTimeout(() => { setAmountError("") }, 3000);
       return;
     }
 
     const currentCryptoAmount = parseFloat(cryptoAmount);
     if (!currentCryptoAmount || currentCryptoAmount <= 0) {
-      setAmountError("Crypto amount must be greater than 0.0");
+      toast.error("Crypto amount must be greater than 0.0");
       setHubtelLoading(false);
       setReddeLoading(false);
-      setTimeout(() => { setAmountError("") }, 3000);
       return;
     }
 
     if (!walletAddress || walletAddress.length === 0) {
-      setWalletError("Please enter a valid wallet address.");
+      toast.error("Please enter a valid wallet address.");
       setHubtelLoading(false);
       setReddeLoading(false);
-      setTimeout(() => { setWalletError("") }, 3000);
       return;
     }
 
     // Validate wallet address
     const isValidWallet = await validateCryptoWallet(crypto, walletAddress);
     if (!isValidWallet) {
-      setWalletError(`Invalid ${crypto} wallet address`);
+      toast.error(`Invalid ${crypto} wallet address`);
       setHubtelLoading(false);
       setReddeLoading(false);
-      setTimeout(() => { setWalletError("") }, 3000);
       return;
     }
 
     if (!phoneNumber || !/^\d{10}$/.test(phoneNumber)) {
-      setPhoneError("Phone number must be 10 digits long.");
+      toast.error("Phone number must be 10 digits long.");
       setHubtelLoading(false);
       setReddeLoading(false);
-      setTimeout(() => { setPhoneError("") }, 3000);
       return;
     }
 
     if (!/^0[25]/.test(phoneNumber)) {
-      setPhoneError("Phone number must begin with 0 and be followed by 5 or 2.");
+      toast.error("Phone number must begin with 0 and be followed by 5 or 2.");
       setHubtelLoading(false);
       setReddeLoading(false);
-      setTimeout(() => { setPhoneError("") }, 3000);
       return;
     }
 
@@ -289,7 +278,6 @@ const Form = () => {
         setReddeLoading(false);
       });
     }
-
     // Don't reset form here - let the payment flow handle it
   };
 
@@ -488,21 +476,7 @@ const Form = () => {
                       ))}
                     </div>
                     
-                    {/* Amount Error */}
-                    <AnimatePresence>
-                      {amountError && (
-                        <motion.p
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          exit={{ opacity: 0 }}
-                          className="error text-yellow-400 text-sm flex items-center gap-2"
-                        >
-                          <i className="bx bxs-error bx-tada"></i>
-                          {amountError}
-                          <i className="bx bxs-error bx-tada"></i>
-                        </motion.p>
-                      )}
-                    </AnimatePresence>
+                  {/* Amount Error - toast only, no inline */}
                     
                     {/* Amount Input */}
                     <div className="relative">
@@ -547,20 +521,7 @@ const Form = () => {
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-slate-300">{crypto} Wallet Address</label>
                     
-                    <AnimatePresence>
-                      {walletError && (
-                        <motion.p
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          exit={{ opacity: 0 }}
-                          className="error text-yellow-400 text-sm flex items-center gap-2"
-                        >
-                          <i className="bx bxs-error bx-tada"></i>
-                          {walletError}
-                          <i className="bx bxs-error bx-tada"></i>
-                        </motion.p>
-                      )}
-                    </AnimatePresence>
+                    {/* Wallet Error - toast only, no inline */}
                     
                     <input
                       type="text"
@@ -575,20 +536,7 @@ const Form = () => {
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-slate-300">Phone Number (For Notifications)</label>
                     
-                    <AnimatePresence>
-                      {phoneError && (
-                        <motion.p
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          exit={{ opacity: 0 }}
-                          className="error text-yellow-400 text-sm flex items-center gap-2"
-                        >
-                          <i className="bx bxs-error bx-tada"></i>
-                          {phoneError}
-                          <i className="bx bxs-error bx-tada"></i>
-                        </motion.p>
-                      )}
-                    </AnimatePresence>
+                    {/* Phone Error - toast only, no inline */}
                     
                     <input
                       type="tel"
@@ -610,7 +558,41 @@ const Form = () => {
                     Back
                   </motion.button>
                   <motion.button
-                    onClick={() => setStep(3)}
+                    onClick={() => {
+                      // Toast-based validation before moving to payment provider selection
+                      setFormError('');
+                      // ...existing code...
+                      const currentUSDAmount = parseFloat(USDAmount);
+                      if (!amountInput || isNaN(currentUSDAmount) || currentUSDAmount <= 0) {
+                        toast.error('Please enter a valid amount.');
+                        return;
+                      }
+                      if (currentUSDAmount < minimumUSDAmount) {
+                        toast.error(`Minimum USD amount to buy is ${minimumUSDAmount}`);
+                        return;
+                      }
+                      if (!walletAddress || walletAddress.length === 0) {
+                        toast.error('Please enter a valid wallet address.');
+                        return;
+                      }
+                      if (!phoneNumber || !/^\d{10}$/.test(phoneNumber)) {
+                        toast.error('Phone number must be 10 digits long.');
+                        return;
+                      }
+                      if (!/^0[25]/.test(phoneNumber)) {
+                        toast.error('Phone number must begin with 0 and be followed by 5 or 2.');
+                        return;
+                      }
+                      // Async wallet validation
+                      (async () => {
+                        const isValidWallet = await validateCryptoWallet(crypto, walletAddress);
+                        if (!isValidWallet) {
+                          toast.error(`Invalid ${crypto} wallet address`);
+                          return;
+                        }
+                        setStep(3);
+                      })();
+                    }}
                     className="w-full sm:flex-1 py-3 sm:py-4 px-6 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl sm:rounded-2xl font-semibold transition-all duration-300 text-sm sm:text-base"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
@@ -795,6 +777,7 @@ const Form = () => {
           </AnimatePresence>
         </motion.div>
       </div>
+    <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} newestOnTop closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover theme="dark" />
     </div>
   );
 };
