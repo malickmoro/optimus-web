@@ -1,5 +1,5 @@
 // src/components/Form.jsx
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState, useCallback } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import ContextVariables from '../context/ContextVariables';
 import { generate_payment_link_hubtel, generate_payment_link_redde, validateCryptoWallet } from '../Functions';
@@ -133,8 +133,8 @@ const Form = () => {
   };
 
   // Handle amount changes based on input type
-  const handleAmountChange = () => {
-    if (!amountInput || !exchangeRate) {
+  const handleAmountChange = useCallback(() => {
+    if (!amountInput || !exchangeRate || exchangeRate <= 0) {
       setUSDAmount(0);
       setGHSAmount(0);
       setCryptoAmount(0);
@@ -143,102 +143,116 @@ const Form = () => {
     }
 
     const inputValue = parseFloat(amountInput);
-    let usdValue, ghsValue, cryptoValue;
+    if (isNaN(inputValue) || inputValue <= 0) return;
+
+    let additionalFee, totalFeeUSD, totalUSDAmount;
 
     switch (amountType) {
-      case 'USD':
-        usdValue = inputValue;
-        const additionalFeeUSD = calculateFee(inputValue);
-        const totalFeeUSD = parseFloat(fee) + additionalFeeUSD;
-        const totalUSDAmount = inputValue + totalFeeUSD;
-        
-        setUSDAmount(inputValue);
+      case 'USD': {
+        additionalFee = calculateFee(inputValue);
+        totalFeeUSD = parseFloat(fee) + additionalFee;
+        totalUSDAmount = inputValue + totalFeeUSD;
+        setUSDAmount(inputValue.toFixed(2));
         setCryptoAmount((inputValue / exchangeRate).toFixed(8));
         setGHSAmount((totalUSDAmount * cediRate).toFixed(2));
         setAmountToPay((totalUSDAmount * cediRate).toFixed(2));
-        setFee(totalFeeUSD.toFixed(2));
         break;
+      }
 
-      case 'GHS':
+      case 'GHS': {
         const estimatedUSDAmount = inputValue / cediRate;
-        const additionalFeeGHS = calculateFee(estimatedUSDAmount);
-        const usdAmountGHS = estimatedUSDAmount - additionalFeeGHS;
-        const totalPayGHS = usdAmountGHS + additionalFeeGHS;
-
+        additionalFee = calculateFee(estimatedUSDAmount);
+        const usdAmountGHS = estimatedUSDAmount - additionalFee;
         setUSDAmount(usdAmountGHS.toFixed(2));
         setCryptoAmount((usdAmountGHS / exchangeRate).toFixed(8));
         setGHSAmount(inputValue.toFixed(2));
-        setAmountToPay((totalPayGHS * cediRate).toFixed(2));
+        setAmountToPay(inputValue.toFixed(2));
         break;
+      }
 
-      case 'CRYPTO':
+      case 'CRYPTO': {
         const usdAmountCrypto = inputValue * exchangeRate;
-        const additionalFeeCrypto = calculateFee(usdAmountCrypto);
-        const totalPayCrypto = usdAmountCrypto + additionalFeeCrypto;
-
+        additionalFee = calculateFee(usdAmountCrypto);
         setUSDAmount(usdAmountCrypto.toFixed(2));
-        setCryptoAmount(inputValue);
-        setGHSAmount((totalPayCrypto * cediRate).toFixed(2));
-        setAmountToPay((totalPayCrypto * cediRate).toFixed(2));
+        setCryptoAmount(inputValue.toFixed(8));
+        setGHSAmount(((usdAmountCrypto + additionalFee) * cediRate).toFixed(2));
+        setAmountToPay(((usdAmountCrypto + additionalFee) * cediRate).toFixed(2));
         break;
+      }
 
       default:
         break;
     }
-  };
+  }, [amountInput, amountType, exchangeRate, cediRate, fee]);
 
-  // Your existing submit handler
+  // Your existing submit handler with proper validation
   const handleSubmit = async (type) => {
+    // Clear previous errors
+    setFormError('');
+    setAmountError('');
+    setWalletError('');
+    setPhoneError('');
+
     if (type === 'hubtel') {
       setHubtelLoading(true);
     } else if (type === 'redde') {
       setReddeLoading(true);
     }
 
-    // Your existing validation logic
+    // Validation checks
     if (!crypto) {
       setFormError("Please select a cryptocurrency to buy.");
       setHubtelLoading(false);
       setReddeLoading(false);
       setTimeout(() => { setFormError("") }, 3000);
       return;
-    } else if (parseFloat(USDAmount) <= 0 || parseFloat(USDAmount) < minimumUSDAmount) {
+    }
+
+    const currentUSDAmount = parseFloat(USDAmount);
+    if (currentUSDAmount <= 0 || currentUSDAmount < minimumUSDAmount) {
       setAmountError(`Minimum USD amount to buy is ${minimumUSDAmount}`);
       setHubtelLoading(false);
       setReddeLoading(false);
       setTimeout(() => { setAmountError("") }, 3000);
       return;
-    } else if (!cryptoAmount) {
+    }
+
+    const currentCryptoAmount = parseFloat(cryptoAmount);
+    if (!currentCryptoAmount || currentCryptoAmount <= 0) {
       setAmountError("Crypto amount must be greater than 0.0");
       setHubtelLoading(false);
       setReddeLoading(false);
       setTimeout(() => { setAmountError("") }, 3000);
       return;
-    } else if (walletAddress?.length === 0) {
+    }
+
+    if (!walletAddress || walletAddress.length === 0) {
       setWalletError("Please enter a valid wallet address.");
       setHubtelLoading(false);
       setReddeLoading(false);
       setTimeout(() => { setWalletError("") }, 3000);
       return;
-    } else if (!await validateCryptoWallet(crypto, walletAddress)) {
-      setWalletError(`Invalid ${crypto} wallet`);
+    }
+
+    // Validate wallet address
+    const isValidWallet = await validateCryptoWallet(crypto, walletAddress);
+    if (!isValidWallet) {
+      setWalletError(`Invalid ${crypto} wallet address`);
       setHubtelLoading(false);
       setReddeLoading(false);
       setTimeout(() => { setWalletError("") }, 3000);
       return;
-    } else if (cryptoAmount <= 0) {
-      setAmountError("Please enter a valid cryptocurrency amount.");
-      setHubtelLoading(false);
-      setReddeLoading(false);
-      setTimeout(() => { setAmountError("") }, 3000);
-      return;
-    } else if (!/^\d{10}$/.test(phoneNumber)) {
+    }
+
+    if (!phoneNumber || !/^\d{10}$/.test(phoneNumber)) {
       setPhoneError("Phone number must be 10 digits long.");
       setHubtelLoading(false);
       setReddeLoading(false);
       setTimeout(() => { setPhoneError("") }, 3000);
       return;
-    } else if (!/^0[25]/.test(phoneNumber)) {
+    }
+
+    if (!/^0[25]/.test(phoneNumber)) {
       setPhoneError("Phone number must begin with 0 and be followed by 5 or 2.");
       setHubtelLoading(false);
       setReddeLoading(false);
@@ -246,18 +260,37 @@ const Form = () => {
       return;
     }
 
+    // Format phone number
+    let formattedPhone = phoneNumber;
     if (phoneNumber.startsWith('0')) {
-      setPhoneNumber('233' + phoneNumber.slice(1));
+      formattedPhone = '233' + phoneNumber.slice(1);
     }
 
+    // Update order data with formatted phone
+    const updatedOrderData = {
+      ...orderData,
+      phoneNumber: formattedPhone,
+      cryptoAmount: parseFloat(cryptoAmount),
+      fee: parseFloat(fee)
+    };
+
+    const updatedPaymentData = {
+      ...paymentData,
+      amountGHS: parseFloat(amountToPay)
+    };
+
+    // Call the appropriate payment function
     if (type === 'hubtel') {
-      generate_payment_link_hubtel(domain, apiKey, setFormError, null, paymentData, orderData, () => setHubtelLoading(false));
+      generate_payment_link_hubtel(domain, apiKey, setFormError, null, updatedPaymentData, updatedOrderData, () => {
+        setHubtelLoading(false);
+      });
     } else if (type === 'redde') {
-      generate_payment_link_redde(domain, apiKey, setFormError, null, paymentData, orderData, () => setReddeLoading(false));
+      generate_payment_link_redde(domain, apiKey, setFormError, null, updatedPaymentData, updatedOrderData, () => {
+        setReddeLoading(false);
+      });
     }
 
-    reset();
-    setCrypto('');
+    // Don't reset form here - let the payment flow handle it
   };
 
   const reset = () => {
@@ -274,16 +307,19 @@ const Form = () => {
     setSelectedProvider('');
   };
 
-  // Effect to handle amount changes
+  // Effect to handle amount changes (with proper dependencies to prevent infinite loop)
   useEffect(() => {
-    handleAmountChange();
-  }, [amountInput, amountType, exchangeRate, fee]);
+    const timeoutId = setTimeout(() => {
+      handleAmountChange();
+    }, 100); // Debounce to prevent rapid calculations
+    return () => clearTimeout(timeoutId);
+  }, [handleAmountChange]);
 
   return (
-    <div className="md:w-[50%] w-full min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-2 sm:p-4">
+    <div className="min-h-screen bg-slate-900 flex items-center justify-center p-2 sm:p-4">
       <LoadingModal isLoading={isLoading} />
       
-      <div className="max-w-2xl mx-auto">
+      <div className="w-full max-w-2xl mx-auto">
         {/* Header */}
         <motion.div 
           initial={{ opacity: 0, y: -20 }}
@@ -423,7 +459,12 @@ const Form = () => {
                   <div className="space-y-2">
                     <div className='flex justify-between items-center'>
                       <label className="text-sm font-medium text-slate-300">Enter Amount</label>
-                      <label className="text-sm font-medium text-slate-300">Cedi Rate({cediRate})</label>
+                      <div className="text-right">
+                        <div className="text-sm font-medium text-slate-300">Cedi Rate: {cediRate}</div>
+                        {minimumUSDAmount > 0 && (
+                          <div className="text-xs text-yellow-400">Min: ${minimumUSDAmount}</div>
+                        )}
+                      </div>
                     </div>
                     
                     {/* Currency Type Selector */}
@@ -609,7 +650,7 @@ const Form = () => {
                       whileTap={{ scale: 0.98 }}
                     >
                       <div className="flex items-center space-x-3 sm:space-x-4">
-                        <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl bg-white flex items-center justify-center">
+                        <div className="w-32 h-16 sm:w-40 sm:h-20 rounded-xl sm:rounded-2xl bg-white flex items-center justify-center">
                           <img src={provider.logo} alt={`${provider.name} Logo`} className="h-8 sm:h-10 w-auto" />
                         </div>
                         <div className="flex-1 text-left">
