@@ -226,6 +226,7 @@ const Form = () => {
       setReddeLoading(false);
       return;
     }
+
     const isValidWallet = await validateCryptoWallet(crypto, walletAddress);
     if (!isValidWallet) {
       toast.error(`Invalid ${crypto} wallet address`);
@@ -556,10 +557,8 @@ const Form = () => {
                     Back
                   </motion.button>
                   <motion.button
-                    onClick={() => {
-                      // Toast-based validation before moving to payment provider selection
+                    onClick={async () => {
                       setFormError('');
-                      // ...existing code...
                       const currentUSDAmount = parseFloat(USDAmount);
                       if (!amountInput || isNaN(currentUSDAmount) || currentUSDAmount <= 0) {
                         toast.error('Please enter a valid amount.');
@@ -573,6 +572,12 @@ const Form = () => {
                         toast.error('Please enter a valid wallet address.');
                         return;
                       }
+                      // Wallet validation before phone validation
+                      const isValidWallet = await validateCryptoWallet(crypto, walletAddress);
+                      if (!isValidWallet) {
+                        toast.error(`Invalid ${crypto} wallet address`);
+                        return;
+                      }
                       if (!phoneNumber || !/^\d{10}$/.test(phoneNumber)) {
                         toast.error('Phone number must be 10 digits long.');
                         return;
@@ -581,15 +586,7 @@ const Form = () => {
                         toast.error('Phone number must begin with 0 and be followed by 5 or 2.');
                         return;
                       }
-                      // Async wallet validation
-                      (async () => {
-                        const isValidWallet = await validateCryptoWallet(crypto, walletAddress);
-                        if (!isValidWallet) {
-                          toast.error(`Invalid ${crypto} wallet address`);
-                          return;
-                        }
-                        setStep(3);
-                      })();
+                      setStep(3);
                     }}
                     className="w-full sm:flex-1 py-3 sm:py-4 px-6 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl sm:rounded-2xl font-semibold transition-all duration-300 text-sm sm:text-base"
                     whileHover={{ scale: 1.02 }}
