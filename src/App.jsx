@@ -20,24 +20,25 @@ const App = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  return (<>
-    <ContextVariablesProvider>
-    <BrowserRouter>
-      <Routes>
-        <Route path="/*" element={<HomePage />} />
-      </Routes>
-    </BrowserRouter>
-    <WhatsAppWidget
-      phoneNumber="233552767658"
-      replyTimeText="Typically replies instantly"
-      companyName="King Plutus"
-      inputPlaceHolder="Reply"
-      message="What's up my gee?"
-      
-      />
+  return (
+    <>
+      <ContextVariablesProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/*" element={<HomePage />} />
+          </Routes>
+        </BrowserRouter>
+        <div style={{ position: 'fixed', top: 0, left: 0, zIndex: 9999 }}>
+          <WhatsAppWidget
+            phoneNumber="233552767658"
+            replyTimeText="Typically replies instantly"
+            companyName="King Plutus"
+            inputPlaceHolder="Reply"
+            message="What's up my gee?"
+          />
+        </div>
       </ContextVariablesProvider>
-  </>
-
+    </>
   );
 };
 

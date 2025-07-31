@@ -483,7 +483,8 @@ const Form = () => {
                         type="number"
                         value={amountInput}
                         onChange={(e) => setAmountInput(e.target.value)}
-                        className="w-full p-3 sm:p-4 bg-slate-800/50 border border-slate-600 rounded-lg sm:rounded-xl text-white placeholder-slate-400 focus:border-purple-400 focus:ring-2 focus:ring-purple-400/20 focus:outline-none transition-all duration-300 text-sm sm:text-base"
+                        className="w-full p-3 sm:p-4 bg-slate-800/50 border border-slate-600 rounded-lg sm:rounded-xl text-white placeholder-slate-400 focus:border-purple-400 focus:ring-2 focus:ring-purple-400/20 focus:outline-none transition-all duration-300 text-base"
+                        style={{ fontSize: '16px' }}
                         placeholder={`Enter amount in ${amountType === 'CRYPTO' ? crypto : amountType}`}
                       />
                       <div className="absolute inset-y-0 right-0 pr-3 sm:pr-4 flex items-center">
@@ -526,7 +527,8 @@ const Form = () => {
                       type="text"
                       value={walletAddress}
                       onChange={(e) => setWalletAddress(e.target.value)}
-                      className="w-full p-3 sm:p-4 bg-slate-800/50 border border-slate-600 rounded-lg sm:rounded-xl text-white placeholder-slate-400 focus:border-purple-400 focus:ring-2 focus:ring-purple-400/20 focus:outline-none transition-all duration-300 text-sm sm:text-base"
+                      className="w-full p-3 sm:p-4 bg-slate-800/50 border border-slate-600 rounded-lg sm:rounded-xl text-white placeholder-slate-400 focus:border-purple-400 focus:ring-2 focus:ring-purple-400/20 focus:outline-none transition-all duration-300 text-base"
+                      style={{ fontSize: '16px' }}
                       placeholder={`Enter your ${crypto} wallet address`}
                     />
                   </div>
@@ -541,7 +543,8 @@ const Form = () => {
                       type="tel"
                       value={phoneNumber}
                       onChange={(e) => setPhoneNumber(e.target.value)}
-                      className="w-full p-3 sm:p-4 bg-slate-800/50 border border-slate-600 rounded-lg sm:rounded-xl text-white placeholder-slate-400 focus:border-purple-400 focus:ring-2 focus:ring-purple-400/20 focus:outline-none transition-all duration-300 text-sm sm:text-base"
+                      className="w-full p-3 sm:p-4 bg-slate-800/50 border border-slate-600 rounded-lg sm:rounded-xl text-white placeholder-slate-400 focus:border-purple-400 focus:ring-2 focus:ring-purple-400/20 focus:outline-none transition-all duration-300 text-base"
+                      style={{ fontSize: '16px' }}
                       placeholder="e.g. 0244123456"
                     />
                   </div>
