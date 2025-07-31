@@ -219,14 +219,13 @@ const Form = () => {
       return;
     }
 
+    // Wallet validation before phone number
     if (!walletAddress || walletAddress.length === 0) {
       toast.error("Please enter a valid wallet address.");
       setHubtelLoading(false);
       setReddeLoading(false);
       return;
     }
-
-    // Validate wallet address using validateCryptoWallet
     const isValidWallet = await validateCryptoWallet(crypto, walletAddress);
     if (!isValidWallet) {
       toast.error(`Invalid ${crypto} wallet address`);
@@ -234,14 +233,13 @@ const Form = () => {
       setReddeLoading(false);
       return;
     }
-
+    // Phone number validation after wallet
     if (!phoneNumber || !/^\d{10}$/.test(phoneNumber)) {
       toast.error("Phone number must be 10 digits long.");
       setHubtelLoading(false);
       setReddeLoading(false);
       return;
     }
-
     if (!/^0[25]/.test(phoneNumber)) {
       toast.error("Phone number must begin with 0 and be followed by 5 or 2.");
       setHubtelLoading(false);
