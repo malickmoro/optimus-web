@@ -379,7 +379,7 @@ const Form = () => {
                   )}
                 </AnimatePresence>
                 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 sm:gap-4">
                   {cryptos.map((cryptoOption) => (
                     <motion.button
                       key={cryptoOption.symbol}
