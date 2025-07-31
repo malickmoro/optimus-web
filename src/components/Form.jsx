@@ -70,6 +70,7 @@ const Form = () => {
 
       const exchangeRate = parseFloat(response?.data?.result[0]?.course).toFixed(2);
       const withdrawalFee = Math.ceil(parseFloat(response?.data?.result[0]?.withdrawalFee) * 100) / 100;
+      setMinimunUSDAmount(Math.ceil(parseFloat(response?.data?.result[0]?.minimum) * 100) / 100);
 
       // Determine fee based on the purchase amount
       let additionalFee = 0;
@@ -86,8 +87,8 @@ const Form = () => {
 
 
       const totalFeeUSD = withdrawalFee + additionalFee;
-      const min = totalFeeUSD + 5;
-      setMinimunUSDAmount(min);
+      // const min = totalFeeUSD + 5;
+      // setMinimunUSDAmount(min);
       setFee(totalFeeUSD.toFixed(2));
       setExchangeRate(exchangeRate);
 
@@ -181,24 +182,30 @@ const Form = () => {
       setReddeLoading(false);
       setTimeout(() => { setFormError("") }, 3000);
       return;
-    } else if (crypto.toUpperCase() === "BTC" && (parseFloat(USDAmount) <= 0 || parseFloat(USDAmount) < parseFloat(11))) {
-      setAmountError(`Minimum USD amount to buy is $11.00`);
+    } else if (parseFloat(USDAmount) <= 0 || parseFloat(USDAmount) < minimumUSDAmount) {
+      setAmountError(`Minimum USD amount to buy is ${minimumUSDAmount}`);
       setHubtelLoading(false);
       setReddeLoading(false);
       setTimeout(() => { setFormError("") }, 3000);
       return;
-    } else if (crypto.toUpperCase() === "LTC" && (parseFloat(USDAmount) <= 0 || parseFloat(USDAmount) < parseFloat(5))) {
-      setAmountError(`Minimum USD amount to buy is $5.00`);
-      setHubtelLoading(false);
-      setReddeLoading(false);
-      setTimeout(() => { setFormError("") }, 3000);
-      return;
-    } else if (parseFloat(USDAmount) <= 0 || parseFloat(USDAmount) < parseFloat(minimumUSDAmount)) {
-      setAmountError(`Minimum USD amount to buy is $10.00`);
-      setHubtelLoading(false);
-      setReddeLoading(false);
-      setTimeout(() => { setFormError("") }, 3000);
-      return;
+      // } else if (crypto.toUpperCase() === "BTC" && (parseFloat(USDAmount) <= 0 || parseFloat(USDAmount) < parseFloat(11))) {
+      //   setAmountError(`Minimum USD amount to buy is $11.00`);
+      //   setHubtelLoading(false);
+      //   setReddeLoading(false);
+      //   setTimeout(() => { setFormError("") }, 3000);
+      //   return;
+      // } else if (crypto.toUpperCase() === "LTC" && (parseFloat(USDAmount) <= 0 || parseFloat(USDAmount) < parseFloat(5))) {
+      //   setAmountError(`Minimum USD amount to buy is $5.00`);
+      //   setHubtelLoading(false);
+      //   setReddeLoading(false);
+      //   setTimeout(() => { setFormError("") }, 3000);
+      //   return;
+      // } else if (parseFloat(USDAmount) <= 0 || parseFloat(USDAmount) < parseFloat(minimumUSDAmount)) {
+      //   setAmountError(`Minimum USD amount to buy is $10.00`);
+      //   setHubtelLoading(false);
+      //   setReddeLoading(false);
+      //   setTimeout(() => { setFormError("") }, 3000);
+      //   return;
     } else if (!cryptoAmount) {
       setAmountError("Crypto amount must be greater than 0.0");
       setHubtelLoading(false);
@@ -282,6 +289,7 @@ const Form = () => {
         // Parsing exchange rate and fees
         const exchangeRate = parseFloat(response?.data?.result[0]?.course || "0").toFixed(2);
         const withdrawalFee = Math.ceil(parseFloat(response?.data?.result[0]?.withdrawalFee || "0") * 100) / 100;
+        setMinimunUSDAmount(Math.ceil(parseFloat(response?.data?.result[0]?.minimum) * 100) / 100);
         const USDAmountFloat = parseFloat(USDAmount);
         const additionalFee = USDAmountFloat > 100
           ? 0.05 * USDAmountFloat
@@ -292,9 +300,7 @@ const Form = () => {
               : 0;
 
         const totalFeeUSD = parseFloat((withdrawalFee + additionalFee).toFixed(2));
-        const min = totalFeeUSD + 5;
 
-        setMinimunUSDAmount(min);
         setFee(totalFeeUSD.toFixed(2));
         setExchangeRate(exchangeRate);
 
