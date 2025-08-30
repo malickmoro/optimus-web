@@ -1,4 +1,18 @@
 import axios from "axios";
+import * as bitcoin from "bitcoinjs-lib";
+
+const litecoinNetwork = {
+  messagePrefix: '\x19Litecoin Signed Message:\n',
+  bech32: 'ltc',
+  bip32: {
+    public: 0x019da462,
+    private: 0x019d9cfe,
+  },
+  pubKeyHash: 0x30, // addresses starting with L/M
+  scriptHash: 0x32, // addresses starting with 3
+  wif: 0xb0,
+};
+
 
 export const fixedHeight = (height) => {
     return (height / 100) * window.innerHeight;
@@ -136,6 +150,9 @@ export const begin_payment = (domain, apiKey, formError, token, paymentData, ord
 
     console.log(JSON.stringify(data, null, 2));
 
+    // Calculate adjustedAmountGHS before using it
+    const adjustedAmountGHS = (parseFloat(paymentData.amountGHS) + (parseFloat(paymentData.amountGHS) * 0.02)).toFixed(2);
+
     axios
         .post(url, data, { headers })
         .then((response) => {
@@ -210,17 +227,13 @@ export const validateMoneroAddress = async (address) => {
     }
 };
 
-export const validateLitecoinAddress = async (address) => {
-    // Validate legacy and SegWit addresses
-    if (
-        (address.length === 34 &&
-            (address.startsWith("M") || address.startsWith("L") || address.startsWith("3"))) ||
-        (address.length >= 42 && address.length <= 90 && address.startsWith("ltc1"))
-    ) {
-        return true; // Valid address
-    } else {
-        return false; // Invalid address
-    }
+export const validateLitecoinAddress = (address) => {
+  try {
+    bitcoin.address.toOutputScript(address, litecoinNetwork);
+    return true;
+  } catch {
+    return false;
+  }
 };
 
 

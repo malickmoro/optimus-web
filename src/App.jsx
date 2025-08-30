@@ -28,13 +28,14 @@ const App = () => {
             <Route path="/*" element={<HomePage />} />
           </Routes>
         </BrowserRouter>
-        <div style={{ position: 'fixed', top: 0, left: 0, zIndex: 9999 }}>
+        <div style={{ position: 'fixed', top: 0, left: 0, zIndex: 9999, width: 'auto', height: 'auto', background: 'none', pointerEvents: 'auto' }}>
           <WhatsAppWidget
             phoneNumber="233552767658"
             replyTimeText="Typically replies instantly"
             companyName="King Plutus"
             inputPlaceHolder="Reply"
             message="What's up my gee?"
+            style={{ position: 'static', margin: 0 }}
           />
         </div>
       </ContextVariablesProvider>
