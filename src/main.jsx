@@ -1,5 +1,6 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
+import { Buffer } from "buffer";
 import App from "./App.jsx";
 import { Analytics } from "@vercel/analytics/react"
 import { ContextVariablesProvider } from "./context/ContextVariables.jsx";
@@ -18,3 +19,4 @@ if (rootElement) {
   </StrictMode>
   );
 }
+window.Buffer = Buffer;
