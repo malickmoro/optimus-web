@@ -1,6 +1,5 @@
 import axios from "axios";
-import WAValidator from "multicoin-address-validator";
-
+import { validateLitecoinAddress } from "./utils/validateLitecoin";
 
 
 export const fixedHeight = (height) => {
@@ -216,10 +215,6 @@ export const validateMoneroAddress = async (address) => {
     }
 };
 
-
-export const validateLitecoinAddress = (address) => {
-  return WAValidator.validate(address, "LTC");
-};
 
 
 export const validateUsdtTrc20Address = async (address) => {
