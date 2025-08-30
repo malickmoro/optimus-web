@@ -1,17 +1,6 @@
 import axios from "axios";
-import * as bitcoin from "bitcoinjs-lib";
+import WAValidator from "multicoin-address-validator";
 
-const litecoinNetwork = {
-  messagePrefix: '\x19Litecoin Signed Message:\n',
-  bech32: 'ltc',
-  bip32: {
-    public: 0x019da462,
-    private: 0x019d9cfe,
-  },
-  pubKeyHash: 0x30, // addresses starting with L/M
-  scriptHash: 0x32, // addresses starting with 3
-  wif: 0xb0,
-};
 
 
 export const fixedHeight = (height) => {
@@ -227,13 +216,9 @@ export const validateMoneroAddress = async (address) => {
     }
 };
 
+
 export const validateLitecoinAddress = (address) => {
-  try {
-    bitcoin.address.toOutputScript(address, litecoinNetwork);
-    return true;
-  } catch {
-    return false;
-  }
+  return WAValidator.validate(address, "LTC");
 };
 
 
