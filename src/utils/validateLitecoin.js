@@ -1,72 +1,57 @@
-// src/utils/validateLitecoin.js
-
-// Base58 alphabet for legacy Litecoin addresses
+// utils/ltcValidate.js
 const BASE58 = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
 
-function decodeBase58(address) {
-  let num = BigInt(0);
-  for (const char of address) {
-    const index = BASE58.indexOf(char);
-    if (index < 0) return null; // invalid char
-    num = num * 58n + BigInt(index);
+function b58decodeToBytes(s) {
+  let num = 0n;
+  for (const c of s) {
+    const i = BASE58.indexOf(c);
+    if (i < 0) return null;
+    num = num * 58n + BigInt(i);
   }
-  return num;
+  // convert BigInt -> bytes
+  let hex = num.toString(16);
+  if (hex.length % 2) hex = "0" + hex;
+  // preserve leading zeros (Base58 leading '1's)
+  let leading = 0;
+  for (const c of s) { if (c === '1') leading++; else break; }
+  const bytes = hexToBytes(hex);
+  const out = new Uint8Array(leading + bytes.length);
+  out.set(bytes, leading);
+  return out;
 }
 
-async function validateBase58Check(address) {
-  try {
-    const num = decodeBase58(address);
-    if (!num) return false;
+function hexToBytes(hex){ const a=[]; for(let i=0;i<hex.length;i+=2)a.push(parseInt(hex.slice(i,i+2),16)); return new Uint8Array(a); }
+function bytesToHex(u8){ return [...u8].map(b=>b.toString(16).padStart(2,'0')).join(''); }
 
-    // Convert to hex with leading zeros
-    let hex = num.toString(16);
-    if (hex.length % 2) hex = "0" + hex;
+async function sha256(u8){ return new Uint8Array(await crypto.subtle.digest("SHA-256", u8)); }
 
-    // A Litecoin Base58Check address should be 25 bytes (50 hex chars)
-    if (hex.length !== 50) return false;
-
-    // Extract payload + checksum
-    const data = hex.slice(0, -8);
-    const checksum = hex.slice(-8);
-
-    // Convert to bytes safely
-    const bytes = hexToBytes(data);
-
-    // Double SHA256 using Web Crypto API
-    const first = await crypto.subtle.digest("SHA-256", bytes);
-    const second = await crypto.subtle.digest("SHA-256", new Uint8Array(first));
-
-    const fullHash = Array.from(new Uint8Array(second))
-      .map(b => b.toString(16).padStart(2, "0"))
-      .join("");
-
-    return fullHash.startsWith(checksum);
-  } catch {
-    return false;
-  }
+async function base58checkValidAndVersion(addr) {
+  const buf = b58decodeToBytes(addr);
+  if (!buf || buf.length < 5) return { ok:false };
+  const data = buf.slice(0, -4);
+  const chk  = buf.slice(-4);
+  const h1 = await sha256(data);
+  const h2 = await sha256(h1);
+  const calc = h2.slice(0,4);
+  const ok = bytesToHex(calc) === bytesToHex(chk);
+  const version = data[0]; // first byte
+  return { ok, version };
 }
 
-function hexToBytes(hex) {
-  const bytes = [];
-  for (let c = 0; c < hex.length; c += 2) {
-    bytes.push(parseInt(hex.substr(c, 2), 16));
-  }
-  return new Uint8Array(bytes);
-}
+export async function validateLitecoinAddress(addr) {
+  // Bech32 (native segwit) must start with 'ltc1'
+  if (/^ltc1[0-9ac-hj-np-z]{11,87}$/.test(addr)) return true;
 
+  // Base58 (legacy)
+  const { ok, version } = await base58checkValidAndVersion(addr);
+  if (!ok) return false;
 
-// Bech32 validation (for ltc1…)
-function validateBech32(address) {
-  return /^ltc1[0-9a-z]{11,87}$/.test(address);
-}
+  // Enforce Litecoin versions:
+  // pubKeyHash (L...) = 0x30, scriptHash (M...) = 0x32
+  if (version === 0x30 || version === 0x32) return true;
 
-// Main exported function
-export async function validateLitecoinAddress(address) {
-  if (address.startsWith("ltc1")) {
-    return validateBech32(address);
-  }
-  if (address.startsWith("L") || address.startsWith("M") || address.startsWith("3")) {
-    return await validateBase58Check(address);
-  }
+  // Optionally accept old LTC P2SH ('3' / 0x05) – NOT recommended:
+  // if (version === 0x05) return true;
+
   return false;
 }
