@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="/WEB-INF/template.xhtml">
+    <ui:define name="title">Order confirmed &ndash; Veristore</ui:define>
+    <ui:define name="content">
+        <h:form id="orderActions" class="d-flex flex-column gap-5">
+            <section class="text-center py-5">
+                <div class="mb-4">
+                    <span class="display-4" role="img" aria-label="Success">🎉</span>
+                </div>
+                <h1 class="h2">Thank you! Your order is confirmed.</h1>
+                <p class="text-muted">A confirmation email has been sent to <strong>you@example.com</strong>. Keep your masked codes safe.</p>
+            </section>
+            <section class="row g-4" aria-label="Digital fulfillment codes">
+                <div class="col-12 col-lg-6">
+                    <article class="card shadow-sm border-0 h-100">
+                        <div class="card-body">
+                            <h2 class="h4">Veristore Enterprise Toolkit</h2>
+                            <p class="text-muted">Order VST-448291 &middot; Instant digital fulfillment</p>
+                            <div class="bg-light rounded p-3 mb-3">
+                                <p class="mb-0 fw-semibold" aria-label="License code">VST-ENT-****-19Q4</p>
+                            </div>
+                            <div class="d-flex flex-wrap gap-2">
+                                <h:commandLink value="Copy code" styleClass="btn btn-outline-primary btn-sm" />
+                                <h:commandLink value="Resend email" styleClass="btn btn-link btn-sm" />
+                            </div>
+                        </div>
+                    </article>
+                </div>
+                <div class="col-12 col-lg-6">
+                    <article class="card shadow-sm border-0 h-100">
+                        <div class="card-body">
+                            <h2 class="h4">Creator Starter Pack</h2>
+                            <p class="text-muted">Shipment VST-992331 &middot; Courier delivery</p>
+                            <div class="bg-light rounded p-3 mb-3">
+                                <p class="mb-0 fw-semibold" aria-label="Tracking code">TRK-****-9241</p>
+                            </div>
+                            <div class="d-flex flex-wrap gap-2">
+                                <h:commandLink value="Track package" styleClass="btn btn-outline-primary btn-sm" />
+                                <h:commandLink value="Resend SMS" styleClass="btn btn-link btn-sm" />
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </section>
+            <section class="mt-2" aria-labelledby="postPurchase">
+                <h2 id="postPurchase" class="h4">Next steps</h2>
+                <div class="row g-4">
+                    <div class="col-12 col-md-4">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-body">
+                                <h3 class="h5">Schedule onboarding</h3>
+                                <p class="text-muted">Reserve time with a deployment specialist for enterprise toolkit configuration.</p>
+                                <h:commandLink value="Book session" styleClass="btn btn-outline-primary btn-sm" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-body">
+                                <h3 class="h5">Invite teammates</h3>
+                                <p class="text-muted">Share secure invitations so colleagues can access their fulfillment codes.</p>
+                                <h:commandLink value="Send invites" styleClass="btn btn-outline-primary btn-sm" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-body">
+                                <h3 class="h5">Download invoice</h3>
+                                <p class="text-muted">Generate a detailed invoice with tax breakdown and compliance metadata.</p>
+                                <h:commandLink value="Download" styleClass="btn btn-outline-primary btn-sm" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <h:link outcome="/products" styleClass="btn btn-link">Continue shopping</h:link>
+                </div>
+            </section>
+        </h:form>
+    </ui:define>
+</ui:composition>

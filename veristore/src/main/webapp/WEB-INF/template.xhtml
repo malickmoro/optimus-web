@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
+    <h:head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title><ui:insert name="title">Veristore</ui:insert></title>
+        <h:outputStylesheet library="bootstrap" name="css/bootstrap.min.css" />
+        <ui:insert name="styles" />
+    </h:head>
+    <h:body class="d-flex flex-column min-vh-100 bg-light text-body">
+        <a href="#main" class="visually-hidden-focusable position-absolute top-0 start-0 m-3 px-3 py-2 bg-dark text-light rounded">Skip to main content</a>
+        <ui:include src="/WEB-INF/partials/navbar.xhtml" />
+
+        <main id="main" class="flex-grow-1">
+            <div class="container py-4 py-lg-5">
+                <h:panelGroup layout="block"
+                              rendered="#{not empty facesContext.messageList}"
+                              styleClass="mb-4"
+                              pt:aria-live="polite"
+                              pt:aria-atomic="true">
+                    <h:messages id="globalMessages"
+                                showSummary="true"
+                                showDetail="true"
+                                layout="list"
+                                styleClass="list-unstyled d-flex flex-column gap-3 mb-0"
+                                infoClass="alert alert-info alert-dismissible fade show mb-0"
+                                warnClass="alert alert-warning alert-dismissible fade show mb-0"
+                                errorClass="alert alert-danger alert-dismissible fade show mb-0"
+                                fatalClass="alert alert-danger alert-dismissible fade show mb-0"
+                                pt:role="alert" />
+                </h:panelGroup>
+                <ui:insert name="content" />
+            </div>
+        </main>
+
+        <ui:include src="/WEB-INF/partials/footer.xhtml" />
+
+        <h:outputScript library="bootstrap" name="js/bootstrap.bundle.min.js" target="body" />
+        <h:outputScript target="body">
+//<![CDATA[
+(function () {
+    var messageList = document.getElementById('globalMessages');
+    if (!messageList) {
+        return;
+    }
+    messageList.querySelectorAll('li.alert-dismissible').forEach(function (item) {
+        item.setAttribute('role', 'alert');
+        if (item.querySelector('[data-bs-dismiss="alert"]')) {
+            return;
+        }
+        var button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'btn-close';
+        button.setAttribute('data-bs-dismiss', 'alert');
+        button.setAttribute('aria-label', 'Dismiss message');
+        item.appendChild(button);
+    });
+})();
+//]]>
+        </h:outputScript>
+        <ui:insert name="scripts" />
+    </h:body>
+</ui:composition>

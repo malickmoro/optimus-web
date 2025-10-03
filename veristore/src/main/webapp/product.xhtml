@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+                template="/WEB-INF/template.xhtml">
+    <ui:define name="title">Product detail &ndash; Veristore</ui:define>
+    <ui:define name="content">
+        <nav aria-label="Breadcrumb" class="mb-3">
+            <ol class="breadcrumb small">
+                <li class="breadcrumb-item"><h:link outcome="/index">Home</h:link></li>
+                <li class="breadcrumb-item"><h:link outcome="/products">Products</h:link></li>
+                <li class="breadcrumb-item active" aria-current="page">Veristore Enterprise Toolkit</li>
+            </ol>
+        </nav>
+        <div class="row g-5">
+            <section class="col-12 col-lg-7" aria-labelledby="productTitle">
+                <span class="badge bg-secondary mb-3">Digital delivery</span>
+                <h1 id="productTitle" class="h2">Veristore Enterprise Toolkit</h1>
+                <p class="lead">Centralized licenses, compliance automation, and onboarding workflows built for scaling organizations.</p>
+                <dl class="row small">
+                    <dt class="col-4 col-sm-3">SKU</dt>
+                    <dd class="col-8 col-sm-9">VST-ENT-993</dd>
+                    <dt class="col-4 col-sm-3">Availability</dt>
+                    <dd class="col-8 col-sm-9">Instant fulfillment</dd>
+                    <dt class="col-4 col-sm-3">Support</dt>
+                    <dd class="col-8 col-sm-9">Dedicated account specialist</dd>
+                </dl>
+                <section aria-labelledby="featuresHeading" class="mt-4">
+                    <h2 id="featuresHeading" class="h4">Highlights</h2>
+                    <ul class="list-unstyled" role="list">
+                        <li class="d-flex align-items-start gap-3 mb-2">
+                            <span class="text-primary" aria-hidden="true">&#10003;</span>
+                            <span>Automated provisioning to major identity providers.</span>
+                        </li>
+                        <li class="d-flex align-items-start gap-3 mb-2">
+                            <span class="text-primary" aria-hidden="true">&#10003;</span>
+                            <span>Audit-ready export of user activity and license consumption.</span>
+                        </li>
+                        <li class="d-flex align-items-start gap-3">
+                            <span class="text-primary" aria-hidden="true">&#10003;</span>
+                            <span>24/7 escalation channel with service-level guarantees.</span>
+                        </li>
+                    </ul>
+                </section>
+            </section>
+            <aside class="col-12 col-lg-5" aria-label="Purchase options">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body">
+                        <h2 class="h4">Purchase</h2>
+                        <p class="h3 mb-4">$799 <span class="fs-6 text-muted">per license pack</span></p>
+                        <h:form id="purchaseForm" class="vstack gap-3">
+                            <div>
+                                <h:outputLabel for="quantity" value="Quantity" styleClass="form-label" />
+                                <h:inputText id="quantity" value="1" styleClass="form-control" pt:type="number" pt:min="1" pt:aria-describedby="quantityHelp" />
+                                <div id="quantityHelp" class="form-text">Enter the number of license packs you require.</div>
+                            </div>
+                            <div class="form-check">
+                                <h:selectBooleanCheckbox id="tos" styleClass="form-check-input" />
+                                <h:outputLabel for="tos" styleClass="form-check-label">
+                                    I agree to the <a href="#" class="link-primary">Terms of Service</a> and acknowledge the service level definitions.
+                                </h:outputLabel>
+                            </div>
+                            <h:commandButton value="Add to cart" styleClass="btn btn-primary btn-lg" />
+                        </h:form>
+                        <div class="mt-4">
+                            <h3 class="h5">Trust signals</h3>
+                            <ul class="list-unstyled small mb-0">
+                                <li>Secure payments processed via Veristore Pay</li>
+                                <li>Instant delivery with audit trail</li>
+                                <li>Money-back guarantee within 30 days</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </ui:define>
+</ui:composition>
