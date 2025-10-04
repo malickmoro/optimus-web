@@ -4,6 +4,7 @@
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
                 xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
+    <f:view locale="#{globalView.locale}">
     <h:head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -11,7 +12,8 @@
         <h:outputStylesheet library="bootstrap" name="css/bootstrap.min.css" />
         <ui:insert name="styles" />
     </h:head>
-    <h:body class="d-flex flex-column min-vh-100 bg-light text-body">
+    <h:body class="d-flex flex-column min-vh-100 bg-light text-body"
+            dir="#{globalView.rtl ? 'rtl' : 'ltr'}" pt:lang="#{globalView.localeCode}">
         <a href="#main" class="visually-hidden-focusable position-absolute top-0 start-0 m-3 px-3 py-2 bg-dark text-light rounded">Skip to main content</a>
         <ui:include src="/WEB-INF/partials/navbar.xhtml" />
 
@@ -64,4 +66,5 @@
         </h:outputScript>
         <ui:insert name="scripts" />
     </h:body>
+    </f:view>
 </ui:composition>

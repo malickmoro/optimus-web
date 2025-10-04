@@ -11,40 +11,36 @@
                     <span class="display-4" role="img" aria-label="Success">🎉</span>
                 </div>
                 <h1 class="h2">Thank you! Your order is confirmed.</h1>
-                <p class="text-muted">A confirmation email has been sent to <strong>you@example.com</strong>. Keep your masked codes safe.</p>
+                <h:panelGroup rendered="#{orderView.loaded}" layout="block">
+                    <p class="text-muted">Order reference <strong>#{orderView.order.publicId}</strong> is being prepared.</p>
+                </h:panelGroup>
+                <h:panelGroup rendered="#{not orderView.loaded}" layout="block" styleClass="alert alert-warning mt-3" role="alert">
+                    We could not locate your order details. Please verify the link from your confirmation email.
+                </h:panelGroup>
             </section>
-            <section class="row g-4" aria-label="Digital fulfillment codes">
-                <div class="col-12 col-lg-6">
-                    <article class="card shadow-sm border-0 h-100">
-                        <div class="card-body">
-                            <h2 class="h4">Veristore Enterprise Toolkit</h2>
-                            <p class="text-muted">Order VST-448291 &middot; Instant digital fulfillment</p>
-                            <div class="bg-light rounded p-3 mb-3">
-                                <p class="mb-0 fw-semibold" aria-label="License code">VST-ENT-****-19Q4</p>
+            <h:panelGroup rendered="#{orderView.loaded}" layout="block">
+                <section class="row g-4" aria-label="Digital fulfillment codes">
+                    <div class="col-12">
+                        <article class="card shadow-sm border-0 h-100">
+                            <div class="card-body">
+                                <h2 class="h4">Fulfillment codes</h2>
+                                <p class="text-muted">Your secure access codes are masked for protection. Resend them at any time.</p>
+                                <ui:repeat value="#{orderView.maskedCodes()}" var="code" varStatus="status">
+                                    <div class="bg-light rounded p-3 mb-3 d-flex justify-content-between align-items-center">
+                                        <span class="fw-semibold" aria-label="Masked code #{status.index + 1}">#{code}</span>
+                                        <div class="d-flex flex-wrap gap-2">
+                                            <h:commandLink value="Resend email" styleClass="btn btn-link btn-sm"
+                                                           action="#{orderView.resendEmail}" />
+                                            <h:commandLink value="Resend SMS" styleClass="btn btn-link btn-sm"
+                                                           action="#{orderView.resendSms}" />
+                                        </div>
+                                    </div>
+                                </ui:repeat>
                             </div>
-                            <div class="d-flex flex-wrap gap-2">
-                                <h:commandLink value="Copy code" styleClass="btn btn-outline-primary btn-sm" />
-                                <h:commandLink value="Resend email" styleClass="btn btn-link btn-sm" />
-                            </div>
-                        </div>
-                    </article>
-                </div>
-                <div class="col-12 col-lg-6">
-                    <article class="card shadow-sm border-0 h-100">
-                        <div class="card-body">
-                            <h2 class="h4">Creator Starter Pack</h2>
-                            <p class="text-muted">Shipment VST-992331 &middot; Courier delivery</p>
-                            <div class="bg-light rounded p-3 mb-3">
-                                <p class="mb-0 fw-semibold" aria-label="Tracking code">TRK-****-9241</p>
-                            </div>
-                            <div class="d-flex flex-wrap gap-2">
-                                <h:commandLink value="Track package" styleClass="btn btn-outline-primary btn-sm" />
-                                <h:commandLink value="Resend SMS" styleClass="btn btn-link btn-sm" />
-                            </div>
-                        </div>
-                    </article>
-                </div>
-            </section>
+                        </article>
+                    </div>
+                </section>
+            </h:panelGroup>
             <section class="mt-2" aria-labelledby="postPurchase">
                 <h2 id="postPurchase" class="h4">Next steps</h2>
                 <div class="row g-4">

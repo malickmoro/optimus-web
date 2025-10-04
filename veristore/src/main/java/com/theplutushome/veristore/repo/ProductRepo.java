@@ -41,22 +41,8 @@ public class ProductRepo {
         CriteriaQuery<Product> cq = cb.createQuery(Product.class);
         Root<Product> root = cq.from(Product.class);
 
-        List<Predicate> predicates = new ArrayList<>();
-        predicates.add(cb.isTrue(root.get("active")));
-
-        if (country != null && !country.isBlank()) {
-            predicates.add(cb.equal(cb.lower(root.get("country")), country.toLowerCase()));
-        }
-
-        if (category != null && !category.isBlank()) {
-            predicates.add(cb.equal(cb.lower(root.get("category")), category.toLowerCase()));
-        }
-
-        if (maxPriceMinor != null) {
-            predicates.add(cb.lessThanOrEqualTo(root.get("priceMinor"), maxPriceMinor));
-        }
-
-        cq.select(root).where(predicates.toArray(new Predicate[0])).orderBy(cb.asc(root.get("name")));
+        Predicate[] filters = buildFilters(cb, root, country, category, maxPriceMinor);
+        cq.select(root).where(filters).orderBy(cb.asc(root.get("name")));
 
         TypedQuery<Product> query = entityManager.createQuery(cq);
         if (size > 0) {
@@ -66,6 +52,15 @@ public class ProductRepo {
         }
 
         return query.getResultList();
+    }
+
+    public long countSearch(String country, String category, Long maxPriceMinor) {
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+        Root<Product> root = cq.from(Product.class);
+        Predicate[] filters = buildFilters(cb, root, country, category, maxPriceMinor);
+        cq.select(cb.count(root)).where(filters);
+        return entityManager.createQuery(cq).getSingleResult();
     }
 
     @Transactional
@@ -84,5 +79,24 @@ public class ProductRepo {
             managed = entityManager.merge(product);
         }
         entityManager.remove(managed);
+    }
+
+    private Predicate[] buildFilters(CriteriaBuilder cb, Root<Product> root, String country, String category,
+            Long maxPriceMinor) {
+        List<Predicate> predicates = new ArrayList<>();
+        predicates.add(cb.isTrue(root.get("active")));
+
+        if (country != null && !country.isBlank()) {
+            predicates.add(cb.equal(cb.lower(root.get("country")), country.toLowerCase()));
+        }
+
+        if (category != null && !category.isBlank()) {
+            predicates.add(cb.equal(cb.lower(root.get("category")), category.toLowerCase()));
+        }
+
+        if (maxPriceMinor != null) {
+            predicates.add(cb.lessThanOrEqualTo(root.get("priceMinor"), maxPriceMinor));
+        }
+        return predicates.toArray(new Predicate[0]);
     }
 }
